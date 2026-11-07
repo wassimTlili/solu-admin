@@ -104,10 +104,10 @@ function RowForm({ phase, editing, onDone }: { phase: Phase; editing: Editing; o
         <DialogDescription>{label}</DialogDescription>
       </DialogHeader>
       <div className="grid gap-4">
-        <Field label="Your body" count={body.length} max={1000} hint="Row 1 of the hero: what's happening in her body.">
+        <Field label="Your body" count={body.length} max={1000} hint="Row 1 of the hero: what's happening in the body.">
           <Textarea value={body} onChange={(event) => setBody(event.target.value)} rows={4} className="bg-white/60" />
         </Field>
-        <Field label="Your energy" count={energy.length} max={1000} hint="Row 2: what it means for her energy today.">
+        <Field label="Your energy" count={energy.length} max={1000} hint="Row 2: what it means for energy today.">
           <Textarea value={energy} onChange={(event) => setEnergy(event.target.value)} rows={4} className="bg-white/60" />
         </Field>
       </div>

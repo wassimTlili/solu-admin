@@ -124,7 +124,7 @@ function FactForm({ fact, onDone }: { fact: Fact | null; onDone: () => void }) {
             <Lightbulb className="size-3.5" /> Did you know?
           </span>
           <p className="text-sm font-medium">{title || "The title shows on Today"}</p>
-          <p className="line-clamp-3 text-xs text-muted-foreground">{fullText || "The full text shows when she opens it."}</p>
+          <p className="line-clamp-3 text-xs text-muted-foreground">{fullText || "The full text shows when the card is opened."}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">

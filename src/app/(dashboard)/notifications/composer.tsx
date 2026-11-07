@@ -256,7 +256,7 @@ export function Composer({ initialMembers }: { initialMembers: Recipient[] }) {
 
             {kind === "FILTER" ? (
               <div className="glass grid gap-4 rounded-xl p-3.5">
-                <Field label="Phase" hint="Her phase on the day it goes out. Members without cycle data are left out.">
+                <Field label="Phase" hint="Each member's phase on the day it goes out. Members without cycle data are left out.">
                   <Chips
                     options={PHASES.map((phase) => ({ ...phase, color: PHASE_COLORS[phase.value] }))}
                     value={phases}

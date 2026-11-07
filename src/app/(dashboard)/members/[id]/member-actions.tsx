@@ -79,7 +79,7 @@ export function MemberActions({ id, email, status, role, isSelf }: Props) {
           <DialogHeader>
             <DialogTitle>Suspend this member?</DialogTitle>
             <DialogDescription>
-              She is signed out of the app at once and can&apos;t sign back in until an admin reactivates her. Her
+              They are signed out of the app at once and can&apos;t sign back in until an admin reactivates the account. Their
               data is kept.
             </DialogDescription>
           </DialogHeader>
@@ -104,8 +104,8 @@ export function MemberActions({ id, email, status, role, isSelf }: Props) {
           <DialogHeader>
             <DialogTitle>Delete this account permanently?</DialogTitle>
             <DialogDescription>
-              Her profile, cycle data, journal, goals and posts are deleted and can&apos;t be recovered. Groups she
-              owns pass to another member. Type her email to confirm.
+              The profile, cycle data, journal, goals and posts are deleted and can&apos;t be recovered. Groups this member
+              owns pass to another member. Type the account email to confirm.
             </DialogDescription>
           </DialogHeader>
           <Input value={confirm} onChange={(event) => setConfirm(event.target.value)} placeholder={email} />

@@ -150,14 +150,14 @@ function ArticleForm({ article, onDone }: { article: Article; onDone: () => void
           <Switch checked={active} onCheckedChange={(checked) => setActive(checked)} />
         </label>
 
-        <Field label="Phases" hint="Members in these phases get it first. Other articles only fill in when her phase has fewer than two.">
+        <Field label="Phases" hint="Members in these phases get it first. Other articles only fill in when the member's phase has fewer than two.">
           <Chips
             options={PHASES.map((phase) => ({ ...phase, color: PHASE_COLORS[phase.value] }))}
             value={phases}
             onChange={setPhases}
           />
         </Field>
-        <Field label="Interests" hint="The 6 blog categories. A match with her interests adds 1 point.">
+        <Field label="Interests" hint="The 6 blog categories. A match with the member's interests adds 1 point.">
           <Chips options={INTEREST_TAGS.map((tag) => ({ value: tag, label: tag }))} value={interests} onChange={setInterests} />
         </Field>
         <Field label="Topics" hint="Comma separated onboarding interest names (e.g. Running, Perimenopause). An exact match with hers adds 2 points.">

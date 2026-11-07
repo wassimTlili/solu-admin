@@ -133,7 +133,7 @@ function ItemForm({ kind, item, onDone }: { kind: string; item: Item | null; onD
         <SheetTitle>{item ? (insight ? "Edit insight" : "Edit prompt") : insight ? "New insight" : "New prompt"}</SheetTitle>
         <SheetDescription>
           Placeholders: <code>{"{phase}"}</code>, <code>{"{day}"}</code> (cycle day) and{" "}
-          <code>{"{groupPhaseCount}"}</code> (women in her groups in this phase). A point that needs a value she
+          <code>{"{groupPhaseCount}"}</code> (women in the member's groups in this phase). A point that needs a value the member
           doesn&apos;t have is hidden.
         </SheetDescription>
       </SheetHeader>

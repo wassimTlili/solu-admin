@@ -26,6 +26,22 @@ export const teamTimeToDate = (local: string): Date => {
   return new Date(asUtc.getTime() - (shown - asUtc.getTime()));
 };
 
+/** An instant as "YYYY-MM-DDTHH:mm" in the team's time zone (for datetime-local inputs). */
+export const toTeamTimeInput = (value: string | null | undefined): string => {
+  if (!value) return "";
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: ADMIN_TIME_ZONE,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).formatToParts(new Date(value));
+  const part = (type: string) => parts.find((item) => item.type === type)?.value ?? "00";
+  return `${part("year")}-${part("month")}-${part("day")}T${part("hour")}:${part("minute")}`;
+};
+
 export const formatDate = (value: string | null | undefined, withTime = false) =>
   value
     ? new Date(value).toLocaleString("en-GB", {
@@ -57,6 +73,8 @@ const STATUS_STYLES: Record<string, string> = {
   PUBLISHED: "bg-emerald-500/12 text-emerald-700",
   ARCHIVED: "bg-neutral-500/15 text-neutral-600",
   REJECTED: "bg-rose-500/12 text-rose-700",
+  HIDDEN: "bg-amber-500/15 text-amber-700",
+  CANCELED: "bg-neutral-500/15 text-neutral-600",
   SCHEDULED: "bg-violet-500/12 text-violet-700",
   SENDING: "bg-amber-500/15 text-amber-700",
   SENT: "bg-emerald-500/12 text-emerald-700",

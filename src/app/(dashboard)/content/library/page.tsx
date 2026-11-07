@@ -39,7 +39,7 @@ const Items = graphql(`
 
 const KINDS = [
   { value: "INSIGHT", label: "Insights", blurb: "The insight sheet on Today: a title, a short text and up to 6 explained points." },
-  { value: "JOURNAL_PROMPT", label: "Journal prompts", blurb: "The Mind prompt on Today and in the journal, rotating within her phase." },
+  { value: "JOURNAL_PROMPT", label: "Journal prompts", blurb: "The Mind prompt on Today and in the journal, rotating within the member's phase." },
 ] as const;
 
 export default async function LibraryPage({ searchParams }: PageProps<"/content/library">) {
@@ -78,7 +78,7 @@ export default async function LibraryPage({ searchParams }: PageProps<"/content/
         ))}
       </nav>
       <p className="max-w-3xl text-sm text-muted-foreground">
-        {KINDS.find((item) => item.value === kind)?.blurb} Items for her phase are used first; items with no phase
+        {KINDS.find((item) => item.value === kind)?.blurb} Items for the member's phase are used first; items with no phase
         fill in when there are none.
       </p>
 

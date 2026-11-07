@@ -15,6 +15,17 @@ import * as types from './graphql';
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+    "\n  query AdminAudit($page: Int, $limit: Int, $action: String, $type: String, $target: String) {\n    adminAuditLog(page: $page, limit: $limit, action: $action, target_type: $type, target_id: $target) {\n      total\n      page\n      limit\n      nodes {\n        id\n        action\n        target_type\n        target_id\n        details\n        created_at\n        admin_email\n        admin_name\n      }\n    }\n  }\n": typeof types.AdminAuditDocument,
+    "\n  mutation AdminSetPostStatus($input: AdminPostStatusInput!) {\n    adminSetPostStatus(input: $input)\n  }\n": typeof types.AdminSetPostStatusDocument,
+    "\n  mutation AdminDeletePost($input: AdminModerationInput!) {\n    adminDeletePost(input: $input)\n  }\n": typeof types.AdminDeletePostDocument,
+    "\n  query AdminPostComments($id: String!) {\n    adminPostComments(post_id: $id) {\n      id\n      content\n      parent_id\n      likes\n      created_at\n      author { id name email image_url }\n    }\n  }\n": typeof types.AdminPostCommentsDocument,
+    "\n  mutation AdminDeleteComment($input: AdminModerationInput!) {\n    adminDeleteComment(input: $input)\n  }\n": typeof types.AdminDeleteCommentDocument,
+    "\n  mutation AdminDeleteGroup($input: AdminModerationInput!) {\n    adminDeleteGroup(input: $input)\n  }\n": typeof types.AdminDeleteGroupDocument,
+    "\n  mutation AdminSaveEvent($id: String, $input: CreateEventInput!) {\n    adminSaveEvent(id: $id, input: $input) { id title }\n  }\n": typeof types.AdminSaveEventDocument,
+    "\n  mutation AdminCancelEvent($input: AdminCancelEventInput!) {\n    adminCancelEvent(input: $input)\n  }\n": typeof types.AdminCancelEventDocument,
+    "\n  query AdminGroups($page: Int, $limit: Int, $search: String, $type: GroupType) {\n    adminGroups(page: $page, limit: $limit, search: $search, type: $type) {\n      total\n      page\n      limit\n      nodes {\n        id\n        name\n        description\n        type\n        image_url\n        location\n        phase_tag\n        members\n        posts\n        pending\n        created_at\n        owner { id name email image_url }\n      }\n    }\n  }\n": typeof types.AdminGroupsDocument,
+    "\n  query AdminHangouts($page: Int, $limit: Int, $when: String, $search: String) {\n    adminEvents(page: $page, limit: $limit, when: $when, search: $search) {\n      total\n      page\n      limit\n      nodes {\n        id\n        title\n        description\n        cover_image_url\n        status\n        city\n        location_address\n        venue_details\n        meeting_url\n        is_online\n        start_time\n        end_time\n        doors_open_at\n        capacity\n        fee_amount\n        host_name\n        host_description\n        host_image_url\n        recommended_phases\n        phase_tip\n        topics\n        going\n        cancelled\n        created_at\n      }\n    }\n    adminInterests { id name }\n  }\n": typeof types.AdminHangoutsDocument,
+    "\n  query AdminPosts($page: Int, $limit: Int, $status: PostStatus, $search: String, $group: String, $author: String) {\n    adminPosts(page: $page, limit: $limit, status: $status, search: $search, group_id: $group, author_id: $author) {\n      total\n      page\n      limit\n      nodes {\n        id\n        content\n        status\n        group_id\n        group_name\n        author_phase\n        likes\n        comments\n        helpfuls\n        saves\n        created_at\n        author { id name email image_url }\n      }\n    }\n  }\n": typeof types.AdminPostsDocument,
     "\n  mutation AdminSaveCard($input: AdminSmartCardInput!) {\n    adminSaveSmartCard(input: $input) { id }\n  }\n": typeof types.AdminSaveCardDocument,
     "\n  mutation AdminDeleteCard($id: String!) {\n    adminDeleteSmartCard(id: $id)\n  }\n": typeof types.AdminDeleteCardDocument,
     "\n  mutation AdminSaveFact($input: AdminDidYouKnowInput!) {\n    adminSaveDidYouKnow(input: $input) { id }\n  }\n": typeof types.AdminSaveFactDocument,
@@ -49,6 +60,17 @@ type Documents = {
     "\n  mutation AdminRefresh($input: AdminRefreshInput!) {\n    adminRefresh(input: $input) {\n      access_token\n      refresh_token\n      expires_in\n    }\n  }\n": typeof types.AdminRefreshDocument,
 };
 const documents: Documents = {
+    "\n  query AdminAudit($page: Int, $limit: Int, $action: String, $type: String, $target: String) {\n    adminAuditLog(page: $page, limit: $limit, action: $action, target_type: $type, target_id: $target) {\n      total\n      page\n      limit\n      nodes {\n        id\n        action\n        target_type\n        target_id\n        details\n        created_at\n        admin_email\n        admin_name\n      }\n    }\n  }\n": types.AdminAuditDocument,
+    "\n  mutation AdminSetPostStatus($input: AdminPostStatusInput!) {\n    adminSetPostStatus(input: $input)\n  }\n": types.AdminSetPostStatusDocument,
+    "\n  mutation AdminDeletePost($input: AdminModerationInput!) {\n    adminDeletePost(input: $input)\n  }\n": types.AdminDeletePostDocument,
+    "\n  query AdminPostComments($id: String!) {\n    adminPostComments(post_id: $id) {\n      id\n      content\n      parent_id\n      likes\n      created_at\n      author { id name email image_url }\n    }\n  }\n": types.AdminPostCommentsDocument,
+    "\n  mutation AdminDeleteComment($input: AdminModerationInput!) {\n    adminDeleteComment(input: $input)\n  }\n": types.AdminDeleteCommentDocument,
+    "\n  mutation AdminDeleteGroup($input: AdminModerationInput!) {\n    adminDeleteGroup(input: $input)\n  }\n": types.AdminDeleteGroupDocument,
+    "\n  mutation AdminSaveEvent($id: String, $input: CreateEventInput!) {\n    adminSaveEvent(id: $id, input: $input) { id title }\n  }\n": types.AdminSaveEventDocument,
+    "\n  mutation AdminCancelEvent($input: AdminCancelEventInput!) {\n    adminCancelEvent(input: $input)\n  }\n": types.AdminCancelEventDocument,
+    "\n  query AdminGroups($page: Int, $limit: Int, $search: String, $type: GroupType) {\n    adminGroups(page: $page, limit: $limit, search: $search, type: $type) {\n      total\n      page\n      limit\n      nodes {\n        id\n        name\n        description\n        type\n        image_url\n        location\n        phase_tag\n        members\n        posts\n        pending\n        created_at\n        owner { id name email image_url }\n      }\n    }\n  }\n": types.AdminGroupsDocument,
+    "\n  query AdminHangouts($page: Int, $limit: Int, $when: String, $search: String) {\n    adminEvents(page: $page, limit: $limit, when: $when, search: $search) {\n      total\n      page\n      limit\n      nodes {\n        id\n        title\n        description\n        cover_image_url\n        status\n        city\n        location_address\n        venue_details\n        meeting_url\n        is_online\n        start_time\n        end_time\n        doors_open_at\n        capacity\n        fee_amount\n        host_name\n        host_description\n        host_image_url\n        recommended_phases\n        phase_tip\n        topics\n        going\n        cancelled\n        created_at\n      }\n    }\n    adminInterests { id name }\n  }\n": types.AdminHangoutsDocument,
+    "\n  query AdminPosts($page: Int, $limit: Int, $status: PostStatus, $search: String, $group: String, $author: String) {\n    adminPosts(page: $page, limit: $limit, status: $status, search: $search, group_id: $group, author_id: $author) {\n      total\n      page\n      limit\n      nodes {\n        id\n        content\n        status\n        group_id\n        group_name\n        author_phase\n        likes\n        comments\n        helpfuls\n        saves\n        created_at\n        author { id name email image_url }\n      }\n    }\n  }\n": types.AdminPostsDocument,
     "\n  mutation AdminSaveCard($input: AdminSmartCardInput!) {\n    adminSaveSmartCard(input: $input) { id }\n  }\n": types.AdminSaveCardDocument,
     "\n  mutation AdminDeleteCard($id: String!) {\n    adminDeleteSmartCard(id: $id)\n  }\n": types.AdminDeleteCardDocument,
     "\n  mutation AdminSaveFact($input: AdminDidYouKnowInput!) {\n    adminSaveDidYouKnow(input: $input) { id }\n  }\n": types.AdminSaveFactDocument,
@@ -83,6 +105,50 @@ const documents: Documents = {
     "\n  mutation AdminRefresh($input: AdminRefreshInput!) {\n    adminRefresh(input: $input) {\n      access_token\n      refresh_token\n      expires_in\n    }\n  }\n": types.AdminRefreshDocument,
 };
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminAudit($page: Int, $limit: Int, $action: String, $type: String, $target: String) {\n    adminAuditLog(page: $page, limit: $limit, action: $action, target_type: $type, target_id: $target) {\n      total\n      page\n      limit\n      nodes {\n        id\n        action\n        target_type\n        target_id\n        details\n        created_at\n        admin_email\n        admin_name\n      }\n    }\n  }\n"): typeof import('./graphql').AdminAuditDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminSetPostStatus($input: AdminPostStatusInput!) {\n    adminSetPostStatus(input: $input)\n  }\n"): typeof import('./graphql').AdminSetPostStatusDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminDeletePost($input: AdminModerationInput!) {\n    adminDeletePost(input: $input)\n  }\n"): typeof import('./graphql').AdminDeletePostDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminPostComments($id: String!) {\n    adminPostComments(post_id: $id) {\n      id\n      content\n      parent_id\n      likes\n      created_at\n      author { id name email image_url }\n    }\n  }\n"): typeof import('./graphql').AdminPostCommentsDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminDeleteComment($input: AdminModerationInput!) {\n    adminDeleteComment(input: $input)\n  }\n"): typeof import('./graphql').AdminDeleteCommentDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminDeleteGroup($input: AdminModerationInput!) {\n    adminDeleteGroup(input: $input)\n  }\n"): typeof import('./graphql').AdminDeleteGroupDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminSaveEvent($id: String, $input: CreateEventInput!) {\n    adminSaveEvent(id: $id, input: $input) { id title }\n  }\n"): typeof import('./graphql').AdminSaveEventDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminCancelEvent($input: AdminCancelEventInput!) {\n    adminCancelEvent(input: $input)\n  }\n"): typeof import('./graphql').AdminCancelEventDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminGroups($page: Int, $limit: Int, $search: String, $type: GroupType) {\n    adminGroups(page: $page, limit: $limit, search: $search, type: $type) {\n      total\n      page\n      limit\n      nodes {\n        id\n        name\n        description\n        type\n        image_url\n        location\n        phase_tag\n        members\n        posts\n        pending\n        created_at\n        owner { id name email image_url }\n      }\n    }\n  }\n"): typeof import('./graphql').AdminGroupsDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminHangouts($page: Int, $limit: Int, $when: String, $search: String) {\n    adminEvents(page: $page, limit: $limit, when: $when, search: $search) {\n      total\n      page\n      limit\n      nodes {\n        id\n        title\n        description\n        cover_image_url\n        status\n        city\n        location_address\n        venue_details\n        meeting_url\n        is_online\n        start_time\n        end_time\n        doors_open_at\n        capacity\n        fee_amount\n        host_name\n        host_description\n        host_image_url\n        recommended_phases\n        phase_tip\n        topics\n        going\n        cancelled\n        created_at\n      }\n    }\n    adminInterests { id name }\n  }\n"): typeof import('./graphql').AdminHangoutsDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminPosts($page: Int, $limit: Int, $status: PostStatus, $search: String, $group: String, $author: String) {\n    adminPosts(page: $page, limit: $limit, status: $status, search: $search, group_id: $group, author_id: $author) {\n      total\n      page\n      limit\n      nodes {\n        id\n        content\n        status\n        group_id\n        group_name\n        author_phase\n        likes\n        comments\n        helpfuls\n        saves\n        created_at\n        author { id name email image_url }\n      }\n    }\n  }\n"): typeof import('./graphql').AdminPostsDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

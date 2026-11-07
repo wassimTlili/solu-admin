@@ -41,6 +41,14 @@ export type AdminCampaignInput = {
   title: string;
 };
 
+export type AdminCancelEventInput = {
+  id: string;
+  /** Tell members who booked */
+  notify_attendees?: boolean;
+  /** Kept in the audit log */
+  reason: string;
+};
+
 export type AdminCycleDayRowInput = {
   body_text: string;
   energy_text: string;
@@ -80,6 +88,20 @@ export type AdminLibraryItemInput = {
 export type AdminLoginInput = {
   email: string;
   password: string;
+};
+
+export type AdminModerationInput = {
+  id: string;
+  /** Kept in the audit log */
+  reason: string;
+};
+
+export type AdminPostStatusInput = {
+  id: string;
+  /** Kept in the audit log */
+  reason: string;
+  /** PUBLISHED or REJECTED */
+  status: PostStatus;
 };
 
 export type AdminRefreshInput = {
@@ -146,6 +168,31 @@ export type ContentKind =
   | 'INSIGHT'
   | 'JOURNAL_PROMPT';
 
+export type CreateEventInput = {
+  capacity?: number | null | undefined;
+  city?: string | null | undefined;
+  cover_image_url?: string | null | undefined;
+  description?: string | null | undefined;
+  doors_open_at?: string | null | undefined;
+  end_time: string;
+  fee_amount?: number | null | undefined;
+  host_description?: string | null | undefined;
+  host_image_url?: string | null | undefined;
+  host_name?: string | null | undefined;
+  is_online: boolean;
+  location_address?: string | null | undefined;
+  location_place_id?: string | null | undefined;
+  meeting_url?: string | null | undefined;
+  phase_tip?: string | null | undefined;
+  recommended_phases?: Array<CyclePhase> | null | undefined;
+  start_time: string;
+  status?: EventStatus | null | undefined;
+  title: string;
+  /** Onboarding interest ids, e.g. IN_ACTIVITIES_0004 */
+  topics?: Array<string> | null | undefined;
+  venue_details?: string | null | undefined;
+};
+
 /** Phase of the menstrual cycle */
 export type CyclePhase =
   | 'FOLLICULAR'
@@ -161,12 +208,30 @@ export type CycleType =
   | 'NOT_SURE'
   | 'POST_PILL';
 
+/** Whether an event is going ahead */
+export type EventStatus =
+  | 'CANCELED'
+  | 'SCHEDULED';
+
+/** Whether anyone can join or join requests need approval */
+export type GroupType =
+  | 'PRIVATE'
+  | 'PUBLIC';
+
 /** Where in her phase today falls (early, mid, late; ovulation is unique) */
 export type PhasePosition =
   | 'EARLY'
   | 'LATE'
   | 'MID'
   | 'UNIQUE';
+
+export type PostStatus =
+  | 'APPROVAL_PENDING'
+  | 'ARCHIVED'
+  | 'DELETED'
+  | 'DRAFT'
+  | 'PUBLISHED'
+  | 'REJECTED';
 
 /** Which part of the day a smart card is written for */
 export type TimeOfDay =
@@ -185,6 +250,99 @@ export type UserStatus =
   | 'DELETED'
   | 'INACTIVE'
   | 'SUSPENDED';
+
+export type AdminAuditQueryVariables = Exact<{
+  page?: number | null | undefined;
+  limit?: number | null | undefined;
+  action?: string | null | undefined;
+  type?: string | null | undefined;
+  target?: string | null | undefined;
+}>;
+
+
+export type AdminAuditQuery = { adminAuditLog: { total: number, page: number, limit: number, nodes: Array<{ id: string, action: string, target_type: string | null, target_id: string | null, details: unknown, created_at: string, admin_email: string | null, admin_name: string | null }> } };
+
+export type AdminSetPostStatusMutationVariables = Exact<{
+  input: AdminPostStatusInput;
+}>;
+
+
+export type AdminSetPostStatusMutation = { adminSetPostStatus: boolean };
+
+export type AdminDeletePostMutationVariables = Exact<{
+  input: AdminModerationInput;
+}>;
+
+
+export type AdminDeletePostMutation = { adminDeletePost: boolean };
+
+export type AdminPostCommentsQueryVariables = Exact<{
+  id: string;
+}>;
+
+
+export type AdminPostCommentsQuery = { adminPostComments: Array<{ id: string, content: string, parent_id: string | null, likes: number, created_at: string, author: { id: string, name: string, email: string, image_url: string | null } }> };
+
+export type AdminDeleteCommentMutationVariables = Exact<{
+  input: AdminModerationInput;
+}>;
+
+
+export type AdminDeleteCommentMutation = { adminDeleteComment: boolean };
+
+export type AdminDeleteGroupMutationVariables = Exact<{
+  input: AdminModerationInput;
+}>;
+
+
+export type AdminDeleteGroupMutation = { adminDeleteGroup: boolean };
+
+export type AdminSaveEventMutationVariables = Exact<{
+  id?: string | null | undefined;
+  input: CreateEventInput;
+}>;
+
+
+export type AdminSaveEventMutation = { adminSaveEvent: { id: string, title: string } };
+
+export type AdminCancelEventMutationVariables = Exact<{
+  input: AdminCancelEventInput;
+}>;
+
+
+export type AdminCancelEventMutation = { adminCancelEvent: boolean };
+
+export type AdminGroupsQueryVariables = Exact<{
+  page?: number | null | undefined;
+  limit?: number | null | undefined;
+  search?: string | null | undefined;
+  type?: GroupType | null | undefined;
+}>;
+
+
+export type AdminGroupsQuery = { adminGroups: { total: number, page: number, limit: number, nodes: Array<{ id: string, name: string, description: string | null, type: GroupType, image_url: string | null, location: string | null, phase_tag: CyclePhase | null, members: number, posts: number, pending: number, created_at: string, owner: { id: string, name: string, email: string, image_url: string | null } }> } };
+
+export type AdminHangoutsQueryVariables = Exact<{
+  page?: number | null | undefined;
+  limit?: number | null | undefined;
+  when?: string | null | undefined;
+  search?: string | null | undefined;
+}>;
+
+
+export type AdminHangoutsQuery = { adminEvents: { total: number, page: number, limit: number, nodes: Array<{ id: string, title: string, description: string | null, cover_image_url: string | null, status: EventStatus, city: string | null, location_address: string | null, venue_details: string | null, meeting_url: string | null, is_online: boolean, start_time: string | null, end_time: string | null, doors_open_at: string | null, capacity: number | null, fee_amount: number | null, host_name: string | null, host_description: string | null, host_image_url: string | null, recommended_phases: Array<CyclePhase>, phase_tip: string | null, topics: Array<string>, going: number, cancelled: number, created_at: string }> }, adminInterests: Array<{ id: string, name: string }> };
+
+export type AdminPostsQueryVariables = Exact<{
+  page?: number | null | undefined;
+  limit?: number | null | undefined;
+  status?: PostStatus | null | undefined;
+  search?: string | null | undefined;
+  group?: string | null | undefined;
+  author?: string | null | undefined;
+}>;
+
+
+export type AdminPostsQuery = { adminPosts: { total: number, page: number, limit: number, nodes: Array<{ id: string, content: string, status: PostStatus, group_id: string, group_name: string, author_phase: CyclePhase | null, likes: number, comments: number, helpfuls: number, saves: number, created_at: string, author: { id: string, name: string, email: string, image_url: string | null } }> } };
 
 export type AdminSaveCardMutationVariables = Exact<{
   input: AdminSmartCardInput;
@@ -447,6 +605,183 @@ export class TypedDocumentString<TResult, TVariables>
   }
 }
 
+export const AdminAuditDocument = new TypedDocumentString(`
+    query AdminAudit($page: Int, $limit: Int, $action: String, $type: String, $target: String) {
+  adminAuditLog(
+    page: $page
+    limit: $limit
+    action: $action
+    target_type: $type
+    target_id: $target
+  ) {
+    total
+    page
+    limit
+    nodes {
+      id
+      action
+      target_type
+      target_id
+      details
+      created_at
+      admin_email
+      admin_name
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminAuditQuery, AdminAuditQueryVariables>;
+export const AdminSetPostStatusDocument = new TypedDocumentString(`
+    mutation AdminSetPostStatus($input: AdminPostStatusInput!) {
+  adminSetPostStatus(input: $input)
+}
+    `) as unknown as TypedDocumentString<AdminSetPostStatusMutation, AdminSetPostStatusMutationVariables>;
+export const AdminDeletePostDocument = new TypedDocumentString(`
+    mutation AdminDeletePost($input: AdminModerationInput!) {
+  adminDeletePost(input: $input)
+}
+    `) as unknown as TypedDocumentString<AdminDeletePostMutation, AdminDeletePostMutationVariables>;
+export const AdminPostCommentsDocument = new TypedDocumentString(`
+    query AdminPostComments($id: String!) {
+  adminPostComments(post_id: $id) {
+    id
+    content
+    parent_id
+    likes
+    created_at
+    author {
+      id
+      name
+      email
+      image_url
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminPostCommentsQuery, AdminPostCommentsQueryVariables>;
+export const AdminDeleteCommentDocument = new TypedDocumentString(`
+    mutation AdminDeleteComment($input: AdminModerationInput!) {
+  adminDeleteComment(input: $input)
+}
+    `) as unknown as TypedDocumentString<AdminDeleteCommentMutation, AdminDeleteCommentMutationVariables>;
+export const AdminDeleteGroupDocument = new TypedDocumentString(`
+    mutation AdminDeleteGroup($input: AdminModerationInput!) {
+  adminDeleteGroup(input: $input)
+}
+    `) as unknown as TypedDocumentString<AdminDeleteGroupMutation, AdminDeleteGroupMutationVariables>;
+export const AdminSaveEventDocument = new TypedDocumentString(`
+    mutation AdminSaveEvent($id: String, $input: CreateEventInput!) {
+  adminSaveEvent(id: $id, input: $input) {
+    id
+    title
+  }
+}
+    `) as unknown as TypedDocumentString<AdminSaveEventMutation, AdminSaveEventMutationVariables>;
+export const AdminCancelEventDocument = new TypedDocumentString(`
+    mutation AdminCancelEvent($input: AdminCancelEventInput!) {
+  adminCancelEvent(input: $input)
+}
+    `) as unknown as TypedDocumentString<AdminCancelEventMutation, AdminCancelEventMutationVariables>;
+export const AdminGroupsDocument = new TypedDocumentString(`
+    query AdminGroups($page: Int, $limit: Int, $search: String, $type: GroupType) {
+  adminGroups(page: $page, limit: $limit, search: $search, type: $type) {
+    total
+    page
+    limit
+    nodes {
+      id
+      name
+      description
+      type
+      image_url
+      location
+      phase_tag
+      members
+      posts
+      pending
+      created_at
+      owner {
+        id
+        name
+        email
+        image_url
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminGroupsQuery, AdminGroupsQueryVariables>;
+export const AdminHangoutsDocument = new TypedDocumentString(`
+    query AdminHangouts($page: Int, $limit: Int, $when: String, $search: String) {
+  adminEvents(page: $page, limit: $limit, when: $when, search: $search) {
+    total
+    page
+    limit
+    nodes {
+      id
+      title
+      description
+      cover_image_url
+      status
+      city
+      location_address
+      venue_details
+      meeting_url
+      is_online
+      start_time
+      end_time
+      doors_open_at
+      capacity
+      fee_amount
+      host_name
+      host_description
+      host_image_url
+      recommended_phases
+      phase_tip
+      topics
+      going
+      cancelled
+      created_at
+    }
+  }
+  adminInterests {
+    id
+    name
+  }
+}
+    `) as unknown as TypedDocumentString<AdminHangoutsQuery, AdminHangoutsQueryVariables>;
+export const AdminPostsDocument = new TypedDocumentString(`
+    query AdminPosts($page: Int, $limit: Int, $status: PostStatus, $search: String, $group: String, $author: String) {
+  adminPosts(
+    page: $page
+    limit: $limit
+    status: $status
+    search: $search
+    group_id: $group
+    author_id: $author
+  ) {
+    total
+    page
+    limit
+    nodes {
+      id
+      content
+      status
+      group_id
+      group_name
+      author_phase
+      likes
+      comments
+      helpfuls
+      saves
+      created_at
+      author {
+        id
+        name
+        email
+        image_url
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminPostsQuery, AdminPostsQueryVariables>;
 export const AdminSaveCardDocument = new TypedDocumentString(`
     mutation AdminSaveCard($input: AdminSmartCardInput!) {
   adminSaveSmartCard(input: $input) {

@@ -55,7 +55,7 @@ export default async function ArticlesPage({ searchParams }: PageProps<"/content
   return (
     <div className="grid gap-4">
       <p className="max-w-3xl text-sm text-muted-foreground">
-        Two blog articles a day on Today: articles tagged with her phase come first, then the best match with her
+        Two blog articles a day on Today: articles tagged with the member's phase come first, then the best match with their
         interests, newest first. Hidden articles are never recommended. Note: running the blog sync (
         <code className="text-xs">npm run db:sync-blog</code>) resets tags and visibility to the tagging spreadsheet.
       </p>

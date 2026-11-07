@@ -31,7 +31,7 @@ export default async function CycleDaysPage({ searchParams }: PageProps<"/conten
   return (
     <div className="grid gap-4">
       <p className="max-w-3xl text-sm text-muted-foreground">
-        The first two lines of the Today hero: what&apos;s happening in her body and what it means for her energy.
+        The first two lines of the Today hero: what&apos;s happening in the body and what it means for energy.
         Each phase is split into early, mid and late days (Ovulation: early and late), and members rotate through
         the variations day by day.
       </p>
