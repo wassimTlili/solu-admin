@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Solu Admin
 
-## Getting Started
+The Solu team's dashboard: analytics, members (suspend, reactivate, roles, delete), notifications
+to members, the content library (recommendations, Did You Know, cycle-day lines, articles,
+insights and journal prompts, spreadsheet import), community moderation (posts, comments,
+groups, hangouts) and an audit log of every change.
 
-First, run the development server:
+Next.js 16 (App Router), Tailwind 4, shadcn on Base UI, glass theme matching the app. It talks
+to the Solu API (`../Solu`) only from the server, with the admin's token kept in httpOnly
+cookies; nothing in the browser calls the API directly.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Private Health data, journal text and AI chats are never shown here (counts only).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Run locally
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Start the API (`../Solu`). The dashboard needs the admin tables:
+   `npx prisma db push` in `../Solu` after pulling.
+2. Create an admin (an existing app account becomes admin, or a new one is made):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   cd ../Solu
+   npm run admin:create -- you@example.com              # random password, printed once
+   npm run admin:create -- you@example.com --password '...'
+   npm run admin:create -- you@example.com --revoke     # removes admin access
+   ```
 
-## Learn More
+3. Start the dashboard:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm install
+   SOLU_API_URL=http://localhost:5010/graphql npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+After changing the API's schema, restart the API (it rewrites `../Solu/schema.gql`) and run
+`npm run codegen` here. `npm run typecheck` and `npm run lint` should both pass.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment
 
-## Deploy on Vercel
+| Variable | Required | What it is |
+| --- | --- | --- |
+| `SOLU_API_URL` | yes | The API's GraphQL URL, e.g. `https://api.solu.ae/graphql`. The spreadsheet import posts to `/v1/admin/content/import` on the same host. |
+| `NEXT_PUBLIC_ADMIN_TIME_ZONE` | no | Time zone for every date shown and for scheduling (default `Asia/Dubai`). |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy (Vercel)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+A second Vercel project, separate from the API:
+
+1. Import this folder as a new project (framework: Next.js; build and output settings as detected).
+2. Set `SOLU_API_URL` (and `NEXT_PUBLIC_ADMIN_TIME_ZONE` if not Dubai) for Production.
+3. On the API's database (Neon): `npx prisma db push` from `../Solu` with the production
+   `DATABASE_URL`, so `admin_sessions`, `admin_audit_logs` and `admin_campaigns` exist, then
+   `npm run admin:create -- <email>` against the same database.
+4. Deploy the API too: the dashboard needs the API's admin module, and scheduled notifications
+   are sent by the API's cron (every 30 minutes on Vercel, through the reminders schedule).
+
+Sessions last 7 days of activity; suspending an admin or removing the role signs them out
+everywhere. Sign-in is limited to 5 attempts a minute per caller IP. Deployed, every sign-in
+reaches the API from the dashboard's server, so that limit is shared by everyone using the
+dashboard: fine for a small team, but repeated bad attempts on the login page can hold admins out
+for a minute at a time. (A follow-up would be limiting per email instead.)
+
+## Things to know
+
+- **Spreadsheet import** treats each file as the source of truth: cards and cycle-day lines
+  missing from a file are deleted and missing facts leave the rotation. Checking a file first
+  lists exactly what would go, including anything added in the dashboard.
+- **Blog sync** (`npm run db:sync-blog` in the API) resets article tags and visibility from the
+  tagging spreadsheet.
+- **Notifications** respect each member's "News from Solu" switch and quiet hours (22:00 to
+  07:00 in their time zone; pushes wait until 07:00). They always land in the in-app inbox
+  unless the member turned the inbox off for them.
+- **Hiding a post** removes it from every feed, link and saved list; its author still sees it.
