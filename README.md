@@ -13,8 +13,14 @@ Private Health data, journal text and AI chats are never shown here (counts only
 
 ## Run locally
 
-1. Start the API (`../Solu`). The dashboard needs the admin tables:
-   `npx prisma db push` in `../Solu` after pulling.
+1. Start the API (`../Solu`). The dashboard needs the admin tables, so after pulling run this
+   **in the API folder** (this folder has no Prisma; `npx prisma` here downloads an unrelated
+   version):
+
+   ```bash
+   cd ../Solu
+   npx prisma db push      # uses DATABASE_URL from ../Solu/.env (your local database)
+   ```
 2. Create an admin (an existing app account becomes admin, or a new one is made):
 
    ```bash
@@ -47,9 +53,17 @@ A second Vercel project, separate from the API:
 
 1. Import this folder as a new project (framework: Next.js; build and output settings as detected).
 2. Set `SOLU_API_URL` (and `NEXT_PUBLIC_ADMIN_TIME_ZONE` if not Dubai) for Production.
-3. On the API's database (Neon): `npx prisma db push` from `../Solu` with the production
-   `DATABASE_URL`, so `admin_sessions`, `admin_audit_logs` and `admin_campaigns` exist, then
-   `npm run admin:create -- <email>` against the same database.
+3. On the API's database (Neon), from `../Solu`, with the production `DATABASE_URL` set for the
+   session only (a variable set in the shell wins over `.env`). Use Neon's **direct** connection
+   string (host without `-pooler`) for schema changes:
+
+   ```powershell
+   cd ..\Solu
+   $env:DATABASE_URL = "postgresql://...neon.tech/...?sslmode=require"
+   npx prisma db push                       # read any data-loss warning before accepting
+   npm run admin:create -- you@example.com  # your dashboard sign-in on production
+   Remove-Item Env:DATABASE_URL             # back to the local database
+   ```
 4. Deploy the API too: the dashboard needs the API's admin module, and scheduled notifications
    are sent by the API's cron (every 30 minutes on Vercel, through the reminders schedule).
 
