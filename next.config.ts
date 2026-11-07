@@ -7,6 +7,10 @@ import type { NextConfig } from "next";
  */
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    // Content spreadsheets go through a Server Action (the team's files are 20–60 KB each).
+    serverActions: { bodySizeLimit: "5mb" },
+  },
   turbopack: {
     rules: {
       "*.css": {

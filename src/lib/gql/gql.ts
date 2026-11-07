@@ -15,6 +15,21 @@ import * as types from './graphql';
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+    "\n  mutation AdminSaveCard($input: AdminSmartCardInput!) {\n    adminSaveSmartCard(input: $input) { id }\n  }\n": typeof types.AdminSaveCardDocument,
+    "\n  mutation AdminDeleteCard($id: String!) {\n    adminDeleteSmartCard(id: $id)\n  }\n": typeof types.AdminDeleteCardDocument,
+    "\n  mutation AdminSaveFact($input: AdminDidYouKnowInput!) {\n    adminSaveDidYouKnow(input: $input) { id }\n  }\n": typeof types.AdminSaveFactDocument,
+    "\n  mutation AdminDeleteFact($id: String!) {\n    adminDeleteDidYouKnow(id: $id)\n  }\n": typeof types.AdminDeleteFactDocument,
+    "\n  mutation AdminSaveDayRow($input: AdminCycleDayRowInput!) {\n    adminSaveCycleDayRow(input: $input) { row_id }\n  }\n": typeof types.AdminSaveDayRowDocument,
+    "\n  mutation AdminDeleteDayRow($id: String!) {\n    adminDeleteCycleDayRow(row_id: $id)\n  }\n": typeof types.AdminDeleteDayRowDocument,
+    "\n  mutation AdminSaveArticle($input: AdminBlogArticleInput!) {\n    adminSaveBlogArticle(input: $input) { id }\n  }\n": typeof types.AdminSaveArticleDocument,
+    "\n  mutation AdminRefreshArticle($id: String!) {\n    adminRefreshBlogArticle(id: $id) { id }\n  }\n": typeof types.AdminRefreshArticleDocument,
+    "\n  mutation AdminSaveLibraryItem($input: AdminLibraryItemInput!) {\n    adminSaveLibraryItem(input: $input) { id }\n  }\n": typeof types.AdminSaveLibraryItemDocument,
+    "\n  mutation AdminDeleteLibraryItem($id: String!) {\n    adminDeleteLibraryItem(id: $id)\n  }\n": typeof types.AdminDeleteLibraryItemDocument,
+    "\n  query AdminArticles($page: Int, $limit: Int, $search: String, $active: Boolean, $phase: CyclePhase) {\n    adminBlogArticles(page: $page, limit: $limit, search: $search, active: $active, phase: $phase) {\n      total\n      page\n      limit\n      nodes {\n        id\n        slug\n        title\n        url\n        cover_image\n        first_para\n        phase_tags\n        interest_tags\n        topic_tags\n        published_at\n        is_active\n        impressions\n      }\n    }\n  }\n": typeof types.AdminArticlesDocument,
+    "\n  query AdminDayRows {\n    adminCycleDayRows {\n      row_id\n      phase\n      phase_position\n      variation\n      body_text\n      energy_text\n    }\n  }\n": typeof types.AdminDayRowsDocument,
+    "\n  query AdminFacts($page: Int, $limit: Int, $search: String, $category: String, $active: Boolean) {\n    adminDidYouKnow(page: $page, limit: $limit, search: $search, category: $category, active: $active) {\n      total\n      page\n      limit\n      nodes {\n        id\n        external_id\n        category\n        title\n        full_text\n        source_url\n        is_active\n        position\n      }\n    }\n  }\n": typeof types.AdminFactsDocument,
+    "\n  query AdminLibrary($page: Int, $limit: Int, $kind: ContentKind, $phase: CyclePhase, $search: String, $active: Boolean) {\n    adminLibraryItems(page: $page, limit: $limit, kind: $kind, phase: $phase, search: $search, active: $active) {\n      total\n      page\n      limit\n      nodes {\n        id\n        kind\n        phase\n        title\n        body\n        details {\n          icon\n          title\n          body\n        }\n        is_active\n        updated_at\n      }\n    }\n  }\n": typeof types.AdminLibraryDocument,
+    "\n  query AdminCards(\n    $page: Int\n    $limit: Int\n    $set: String\n    $phase: CyclePhase\n    $position: PhasePosition\n    $time: TimeOfDay\n    $search: String\n  ) {\n    adminSmartCards(\n      page: $page\n      limit: $limit\n      set: $set\n      phase: $phase\n      phase_position: $position\n      time_of_day: $time\n      search: $search\n    ) {\n      total\n      page\n      limit\n      nodes {\n        id\n        set\n        phase\n        phase_position\n        time_of_day\n        content_type\n        tone\n        headline\n        explanation\n        mind\n        hydration_tip\n        source\n        source_detail\n      }\n    }\n  }\n": typeof types.AdminCardsDocument,
     "\n  query AdminMember($id: String!) {\n    adminMe { id }\n    adminUser(id: $id) {\n      id\n      email\n      first_name\n      last_name\n      username\n      image_url\n      status\n      role\n      location\n      login_provider\n      cycle_type\n      phase\n      cycle_day\n      cycle_length\n      timezone\n      age\n      suspended_at\n      suspension_reason\n      lifetime_points\n      level\n      invited_by\n      device_platforms\n      group_names\n      created_at\n      last_login\n      counts {\n        posts\n        comments\n        groups\n        hangout_bookings\n        moods\n        journal_entries\n        period_logs\n        active_goals\n        badges\n        friends\n        devices\n        active_days_30\n      }\n      recent_posts { id excerpt group_name status created_at }\n    }\n    adminAuditLog(target_type: \"user\", target_id: $id, limit: 10) {\n      nodes { id action details created_at admin_email }\n    }\n  }\n": typeof types.AdminMemberDocument,
     "\n  mutation AdminSuspend($input: AdminSuspendUserInput!) {\n    adminSuspendUser(input: $input) { id status }\n  }\n": typeof types.AdminSuspendDocument,
     "\n  mutation AdminReactivate($id: String!) {\n    adminReactivateUser(user_id: $id) { id status }\n  }\n": typeof types.AdminReactivateDocument,
@@ -27,6 +42,21 @@ type Documents = {
     "\n  mutation AdminRefresh($input: AdminRefreshInput!) {\n    adminRefresh(input: $input) {\n      access_token\n      refresh_token\n      expires_in\n    }\n  }\n": typeof types.AdminRefreshDocument,
 };
 const documents: Documents = {
+    "\n  mutation AdminSaveCard($input: AdminSmartCardInput!) {\n    adminSaveSmartCard(input: $input) { id }\n  }\n": types.AdminSaveCardDocument,
+    "\n  mutation AdminDeleteCard($id: String!) {\n    adminDeleteSmartCard(id: $id)\n  }\n": types.AdminDeleteCardDocument,
+    "\n  mutation AdminSaveFact($input: AdminDidYouKnowInput!) {\n    adminSaveDidYouKnow(input: $input) { id }\n  }\n": types.AdminSaveFactDocument,
+    "\n  mutation AdminDeleteFact($id: String!) {\n    adminDeleteDidYouKnow(id: $id)\n  }\n": types.AdminDeleteFactDocument,
+    "\n  mutation AdminSaveDayRow($input: AdminCycleDayRowInput!) {\n    adminSaveCycleDayRow(input: $input) { row_id }\n  }\n": types.AdminSaveDayRowDocument,
+    "\n  mutation AdminDeleteDayRow($id: String!) {\n    adminDeleteCycleDayRow(row_id: $id)\n  }\n": types.AdminDeleteDayRowDocument,
+    "\n  mutation AdminSaveArticle($input: AdminBlogArticleInput!) {\n    adminSaveBlogArticle(input: $input) { id }\n  }\n": types.AdminSaveArticleDocument,
+    "\n  mutation AdminRefreshArticle($id: String!) {\n    adminRefreshBlogArticle(id: $id) { id }\n  }\n": types.AdminRefreshArticleDocument,
+    "\n  mutation AdminSaveLibraryItem($input: AdminLibraryItemInput!) {\n    adminSaveLibraryItem(input: $input) { id }\n  }\n": types.AdminSaveLibraryItemDocument,
+    "\n  mutation AdminDeleteLibraryItem($id: String!) {\n    adminDeleteLibraryItem(id: $id)\n  }\n": types.AdminDeleteLibraryItemDocument,
+    "\n  query AdminArticles($page: Int, $limit: Int, $search: String, $active: Boolean, $phase: CyclePhase) {\n    adminBlogArticles(page: $page, limit: $limit, search: $search, active: $active, phase: $phase) {\n      total\n      page\n      limit\n      nodes {\n        id\n        slug\n        title\n        url\n        cover_image\n        first_para\n        phase_tags\n        interest_tags\n        topic_tags\n        published_at\n        is_active\n        impressions\n      }\n    }\n  }\n": types.AdminArticlesDocument,
+    "\n  query AdminDayRows {\n    adminCycleDayRows {\n      row_id\n      phase\n      phase_position\n      variation\n      body_text\n      energy_text\n    }\n  }\n": types.AdminDayRowsDocument,
+    "\n  query AdminFacts($page: Int, $limit: Int, $search: String, $category: String, $active: Boolean) {\n    adminDidYouKnow(page: $page, limit: $limit, search: $search, category: $category, active: $active) {\n      total\n      page\n      limit\n      nodes {\n        id\n        external_id\n        category\n        title\n        full_text\n        source_url\n        is_active\n        position\n      }\n    }\n  }\n": types.AdminFactsDocument,
+    "\n  query AdminLibrary($page: Int, $limit: Int, $kind: ContentKind, $phase: CyclePhase, $search: String, $active: Boolean) {\n    adminLibraryItems(page: $page, limit: $limit, kind: $kind, phase: $phase, search: $search, active: $active) {\n      total\n      page\n      limit\n      nodes {\n        id\n        kind\n        phase\n        title\n        body\n        details {\n          icon\n          title\n          body\n        }\n        is_active\n        updated_at\n      }\n    }\n  }\n": types.AdminLibraryDocument,
+    "\n  query AdminCards(\n    $page: Int\n    $limit: Int\n    $set: String\n    $phase: CyclePhase\n    $position: PhasePosition\n    $time: TimeOfDay\n    $search: String\n  ) {\n    adminSmartCards(\n      page: $page\n      limit: $limit\n      set: $set\n      phase: $phase\n      phase_position: $position\n      time_of_day: $time\n      search: $search\n    ) {\n      total\n      page\n      limit\n      nodes {\n        id\n        set\n        phase\n        phase_position\n        time_of_day\n        content_type\n        tone\n        headline\n        explanation\n        mind\n        hydration_tip\n        source\n        source_detail\n      }\n    }\n  }\n": types.AdminCardsDocument,
     "\n  query AdminMember($id: String!) {\n    adminMe { id }\n    adminUser(id: $id) {\n      id\n      email\n      first_name\n      last_name\n      username\n      image_url\n      status\n      role\n      location\n      login_provider\n      cycle_type\n      phase\n      cycle_day\n      cycle_length\n      timezone\n      age\n      suspended_at\n      suspension_reason\n      lifetime_points\n      level\n      invited_by\n      device_platforms\n      group_names\n      created_at\n      last_login\n      counts {\n        posts\n        comments\n        groups\n        hangout_bookings\n        moods\n        journal_entries\n        period_logs\n        active_goals\n        badges\n        friends\n        devices\n        active_days_30\n      }\n      recent_posts { id excerpt group_name status created_at }\n    }\n    adminAuditLog(target_type: \"user\", target_id: $id, limit: 10) {\n      nodes { id action details created_at admin_email }\n    }\n  }\n": types.AdminMemberDocument,
     "\n  mutation AdminSuspend($input: AdminSuspendUserInput!) {\n    adminSuspendUser(input: $input) { id status }\n  }\n": types.AdminSuspendDocument,
     "\n  mutation AdminReactivate($id: String!) {\n    adminReactivateUser(user_id: $id) { id status }\n  }\n": types.AdminReactivateDocument,
@@ -39,6 +69,66 @@ const documents: Documents = {
     "\n  mutation AdminRefresh($input: AdminRefreshInput!) {\n    adminRefresh(input: $input) {\n      access_token\n      refresh_token\n      expires_in\n    }\n  }\n": types.AdminRefreshDocument,
 };
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminSaveCard($input: AdminSmartCardInput!) {\n    adminSaveSmartCard(input: $input) { id }\n  }\n"): typeof import('./graphql').AdminSaveCardDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminDeleteCard($id: String!) {\n    adminDeleteSmartCard(id: $id)\n  }\n"): typeof import('./graphql').AdminDeleteCardDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminSaveFact($input: AdminDidYouKnowInput!) {\n    adminSaveDidYouKnow(input: $input) { id }\n  }\n"): typeof import('./graphql').AdminSaveFactDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminDeleteFact($id: String!) {\n    adminDeleteDidYouKnow(id: $id)\n  }\n"): typeof import('./graphql').AdminDeleteFactDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminSaveDayRow($input: AdminCycleDayRowInput!) {\n    adminSaveCycleDayRow(input: $input) { row_id }\n  }\n"): typeof import('./graphql').AdminSaveDayRowDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminDeleteDayRow($id: String!) {\n    adminDeleteCycleDayRow(row_id: $id)\n  }\n"): typeof import('./graphql').AdminDeleteDayRowDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminSaveArticle($input: AdminBlogArticleInput!) {\n    adminSaveBlogArticle(input: $input) { id }\n  }\n"): typeof import('./graphql').AdminSaveArticleDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminRefreshArticle($id: String!) {\n    adminRefreshBlogArticle(id: $id) { id }\n  }\n"): typeof import('./graphql').AdminRefreshArticleDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminSaveLibraryItem($input: AdminLibraryItemInput!) {\n    adminSaveLibraryItem(input: $input) { id }\n  }\n"): typeof import('./graphql').AdminSaveLibraryItemDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminDeleteLibraryItem($id: String!) {\n    adminDeleteLibraryItem(id: $id)\n  }\n"): typeof import('./graphql').AdminDeleteLibraryItemDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminArticles($page: Int, $limit: Int, $search: String, $active: Boolean, $phase: CyclePhase) {\n    adminBlogArticles(page: $page, limit: $limit, search: $search, active: $active, phase: $phase) {\n      total\n      page\n      limit\n      nodes {\n        id\n        slug\n        title\n        url\n        cover_image\n        first_para\n        phase_tags\n        interest_tags\n        topic_tags\n        published_at\n        is_active\n        impressions\n      }\n    }\n  }\n"): typeof import('./graphql').AdminArticlesDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminDayRows {\n    adminCycleDayRows {\n      row_id\n      phase\n      phase_position\n      variation\n      body_text\n      energy_text\n    }\n  }\n"): typeof import('./graphql').AdminDayRowsDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminFacts($page: Int, $limit: Int, $search: String, $category: String, $active: Boolean) {\n    adminDidYouKnow(page: $page, limit: $limit, search: $search, category: $category, active: $active) {\n      total\n      page\n      limit\n      nodes {\n        id\n        external_id\n        category\n        title\n        full_text\n        source_url\n        is_active\n        position\n      }\n    }\n  }\n"): typeof import('./graphql').AdminFactsDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminLibrary($page: Int, $limit: Int, $kind: ContentKind, $phase: CyclePhase, $search: String, $active: Boolean) {\n    adminLibraryItems(page: $page, limit: $limit, kind: $kind, phase: $phase, search: $search, active: $active) {\n      total\n      page\n      limit\n      nodes {\n        id\n        kind\n        phase\n        title\n        body\n        details {\n          icon\n          title\n          body\n        }\n        is_active\n        updated_at\n      }\n    }\n  }\n"): typeof import('./graphql').AdminLibraryDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminCards(\n    $page: Int\n    $limit: Int\n    $set: String\n    $phase: CyclePhase\n    $position: PhasePosition\n    $time: TimeOfDay\n    $search: String\n  ) {\n    adminSmartCards(\n      page: $page\n      limit: $limit\n      set: $set\n      phase: $phase\n      phase_position: $position\n      time_of_day: $time\n      search: $search\n    ) {\n      total\n      page\n      limit\n      nodes {\n        id\n        set\n        phase\n        phase_position\n        time_of_day\n        content_type\n        tone\n        headline\n        explanation\n        mind\n        hydration_tip\n        source\n        source_detail\n      }\n    }\n  }\n"): typeof import('./graphql').AdminCardsDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

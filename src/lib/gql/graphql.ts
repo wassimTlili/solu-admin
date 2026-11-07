@@ -4,6 +4,53 @@ type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 import type { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
+export type AdminBlogArticleInput = {
+  cover_image?: string | null | undefined;
+  first_para?: string | null | undefined;
+  id: string;
+  interest_tags: Array<string>;
+  is_active: boolean;
+  phase_tags: Array<CyclePhase>;
+  title: string;
+  topic_tags: Array<string>;
+};
+
+export type AdminCycleDayRowInput = {
+  body_text: string;
+  energy_text: string;
+  phase: CyclePhase;
+  phase_position: PhasePosition;
+  variation: number;
+};
+
+export type AdminDidYouKnowInput = {
+  category: string;
+  external_id?: string | null | undefined;
+  full_text: string;
+  /** Omit to add a fact */
+  id?: string | null | undefined;
+  is_active?: boolean;
+  source_url?: string | null | undefined;
+  title: string;
+};
+
+export type AdminLibraryDetailInput = {
+  body: string;
+  icon: string;
+  title?: string | null | undefined;
+};
+
+export type AdminLibraryItemInput = {
+  body: string;
+  details?: Array<AdminLibraryDetailInput>;
+  /** Omit to add an item */
+  id?: string | null | undefined;
+  is_active?: boolean;
+  kind: ContentKind;
+  phase?: CyclePhase | null | undefined;
+  title: string;
+};
+
 export type AdminLoginInput = {
   email: string;
   password: string;
@@ -11,6 +58,25 @@ export type AdminLoginInput = {
 
 export type AdminRefreshInput = {
   refresh_token: string;
+};
+
+export type AdminSmartCardInput = {
+  content_type: string;
+  /** True when adding: refuses an id already in use */
+  create?: boolean | null | undefined;
+  explanation: string;
+  headline: string;
+  hydration_tip?: string | null | undefined;
+  /** e.g. M-E-MOR-01 (Set A) or B-M-E-MOR-01 (Set B) */
+  id: string;
+  mind?: string | null | undefined;
+  phase: CyclePhase;
+  phase_position: PhasePosition;
+  set: string;
+  source?: string | null | undefined;
+  source_detail?: string | null | undefined;
+  time_of_day: TimeOfDay;
+  tone?: string | null | undefined;
 };
 
 export type AdminSuspendUserInput = {
@@ -33,6 +99,13 @@ export type AdminUserFilterInput = {
   status?: UserStatus | null | undefined;
 };
 
+/** Kind of daily content card */
+export type ContentKind =
+  | 'ARTICLE'
+  | 'DID_YOU_KNOW'
+  | 'INSIGHT'
+  | 'JOURNAL_PROMPT';
+
 /** Phase of the menstrual cycle */
 export type CyclePhase =
   | 'FOLLICULAR'
@@ -48,6 +121,19 @@ export type CycleType =
   | 'NOT_SURE'
   | 'POST_PILL';
 
+/** Where in her phase today falls (early, mid, late; ovulation is unique) */
+export type PhasePosition =
+  | 'EARLY'
+  | 'LATE'
+  | 'MID'
+  | 'UNIQUE';
+
+/** Which part of the day a smart card is written for */
+export type TimeOfDay =
+  | 'AFTERNOON'
+  | 'EVENING'
+  | 'MORNING';
+
 /** Role of the user */
 export type UserRole =
   | 'ADMIN'
@@ -59,6 +145,128 @@ export type UserStatus =
   | 'DELETED'
   | 'INACTIVE'
   | 'SUSPENDED';
+
+export type AdminSaveCardMutationVariables = Exact<{
+  input: AdminSmartCardInput;
+}>;
+
+
+export type AdminSaveCardMutation = { adminSaveSmartCard: { id: string } };
+
+export type AdminDeleteCardMutationVariables = Exact<{
+  id: string;
+}>;
+
+
+export type AdminDeleteCardMutation = { adminDeleteSmartCard: boolean };
+
+export type AdminSaveFactMutationVariables = Exact<{
+  input: AdminDidYouKnowInput;
+}>;
+
+
+export type AdminSaveFactMutation = { adminSaveDidYouKnow: { id: string } };
+
+export type AdminDeleteFactMutationVariables = Exact<{
+  id: string;
+}>;
+
+
+export type AdminDeleteFactMutation = { adminDeleteDidYouKnow: boolean };
+
+export type AdminSaveDayRowMutationVariables = Exact<{
+  input: AdminCycleDayRowInput;
+}>;
+
+
+export type AdminSaveDayRowMutation = { adminSaveCycleDayRow: { row_id: string } };
+
+export type AdminDeleteDayRowMutationVariables = Exact<{
+  id: string;
+}>;
+
+
+export type AdminDeleteDayRowMutation = { adminDeleteCycleDayRow: boolean };
+
+export type AdminSaveArticleMutationVariables = Exact<{
+  input: AdminBlogArticleInput;
+}>;
+
+
+export type AdminSaveArticleMutation = { adminSaveBlogArticle: { id: string } };
+
+export type AdminRefreshArticleMutationVariables = Exact<{
+  id: string;
+}>;
+
+
+export type AdminRefreshArticleMutation = { adminRefreshBlogArticle: { id: string } };
+
+export type AdminSaveLibraryItemMutationVariables = Exact<{
+  input: AdminLibraryItemInput;
+}>;
+
+
+export type AdminSaveLibraryItemMutation = { adminSaveLibraryItem: { id: string } };
+
+export type AdminDeleteLibraryItemMutationVariables = Exact<{
+  id: string;
+}>;
+
+
+export type AdminDeleteLibraryItemMutation = { adminDeleteLibraryItem: boolean };
+
+export type AdminArticlesQueryVariables = Exact<{
+  page?: number | null | undefined;
+  limit?: number | null | undefined;
+  search?: string | null | undefined;
+  active?: boolean | null | undefined;
+  phase?: CyclePhase | null | undefined;
+}>;
+
+
+export type AdminArticlesQuery = { adminBlogArticles: { total: number, page: number, limit: number, nodes: Array<{ id: string, slug: string, title: string, url: string, cover_image: string | null, first_para: string | null, phase_tags: Array<CyclePhase>, interest_tags: Array<string>, topic_tags: Array<string>, published_at: string | null, is_active: boolean, impressions: number }> } };
+
+export type AdminDayRowsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AdminDayRowsQuery = { adminCycleDayRows: Array<{ row_id: string, phase: CyclePhase, phase_position: PhasePosition, variation: number, body_text: string, energy_text: string }> };
+
+export type AdminFactsQueryVariables = Exact<{
+  page?: number | null | undefined;
+  limit?: number | null | undefined;
+  search?: string | null | undefined;
+  category?: string | null | undefined;
+  active?: boolean | null | undefined;
+}>;
+
+
+export type AdminFactsQuery = { adminDidYouKnow: { total: number, page: number, limit: number, nodes: Array<{ id: string, external_id: string | null, category: string | null, title: string, full_text: string, source_url: string | null, is_active: boolean, position: number }> } };
+
+export type AdminLibraryQueryVariables = Exact<{
+  page?: number | null | undefined;
+  limit?: number | null | undefined;
+  kind?: ContentKind | null | undefined;
+  phase?: CyclePhase | null | undefined;
+  search?: string | null | undefined;
+  active?: boolean | null | undefined;
+}>;
+
+
+export type AdminLibraryQuery = { adminLibraryItems: { total: number, page: number, limit: number, nodes: Array<{ id: string, kind: ContentKind, phase: CyclePhase | null, title: string, body: string, is_active: boolean, updated_at: string, details: Array<{ icon: string, title: string | null, body: string }> }> } };
+
+export type AdminCardsQueryVariables = Exact<{
+  page?: number | null | undefined;
+  limit?: number | null | undefined;
+  set?: string | null | undefined;
+  phase?: CyclePhase | null | undefined;
+  position?: PhasePosition | null | undefined;
+  time?: TimeOfDay | null | undefined;
+  search?: string | null | undefined;
+}>;
+
+
+export type AdminCardsQuery = { adminSmartCards: { total: number, page: number, limit: number, nodes: Array<{ id: string, set: string, phase: CyclePhase, phase_position: PhasePosition, time_of_day: TimeOfDay, content_type: string, tone: string | null, headline: string, explanation: string, mind: string | null, hydration_tip: string | null, source: string | null, source_detail: string | null }> } };
 
 export type AdminMemberQueryVariables = Exact<{
   id: string;
@@ -150,6 +358,196 @@ export class TypedDocumentString<TResult, TVariables>
   }
 }
 
+export const AdminSaveCardDocument = new TypedDocumentString(`
+    mutation AdminSaveCard($input: AdminSmartCardInput!) {
+  adminSaveSmartCard(input: $input) {
+    id
+  }
+}
+    `) as unknown as TypedDocumentString<AdminSaveCardMutation, AdminSaveCardMutationVariables>;
+export const AdminDeleteCardDocument = new TypedDocumentString(`
+    mutation AdminDeleteCard($id: String!) {
+  adminDeleteSmartCard(id: $id)
+}
+    `) as unknown as TypedDocumentString<AdminDeleteCardMutation, AdminDeleteCardMutationVariables>;
+export const AdminSaveFactDocument = new TypedDocumentString(`
+    mutation AdminSaveFact($input: AdminDidYouKnowInput!) {
+  adminSaveDidYouKnow(input: $input) {
+    id
+  }
+}
+    `) as unknown as TypedDocumentString<AdminSaveFactMutation, AdminSaveFactMutationVariables>;
+export const AdminDeleteFactDocument = new TypedDocumentString(`
+    mutation AdminDeleteFact($id: String!) {
+  adminDeleteDidYouKnow(id: $id)
+}
+    `) as unknown as TypedDocumentString<AdminDeleteFactMutation, AdminDeleteFactMutationVariables>;
+export const AdminSaveDayRowDocument = new TypedDocumentString(`
+    mutation AdminSaveDayRow($input: AdminCycleDayRowInput!) {
+  adminSaveCycleDayRow(input: $input) {
+    row_id
+  }
+}
+    `) as unknown as TypedDocumentString<AdminSaveDayRowMutation, AdminSaveDayRowMutationVariables>;
+export const AdminDeleteDayRowDocument = new TypedDocumentString(`
+    mutation AdminDeleteDayRow($id: String!) {
+  adminDeleteCycleDayRow(row_id: $id)
+}
+    `) as unknown as TypedDocumentString<AdminDeleteDayRowMutation, AdminDeleteDayRowMutationVariables>;
+export const AdminSaveArticleDocument = new TypedDocumentString(`
+    mutation AdminSaveArticle($input: AdminBlogArticleInput!) {
+  adminSaveBlogArticle(input: $input) {
+    id
+  }
+}
+    `) as unknown as TypedDocumentString<AdminSaveArticleMutation, AdminSaveArticleMutationVariables>;
+export const AdminRefreshArticleDocument = new TypedDocumentString(`
+    mutation AdminRefreshArticle($id: String!) {
+  adminRefreshBlogArticle(id: $id) {
+    id
+  }
+}
+    `) as unknown as TypedDocumentString<AdminRefreshArticleMutation, AdminRefreshArticleMutationVariables>;
+export const AdminSaveLibraryItemDocument = new TypedDocumentString(`
+    mutation AdminSaveLibraryItem($input: AdminLibraryItemInput!) {
+  adminSaveLibraryItem(input: $input) {
+    id
+  }
+}
+    `) as unknown as TypedDocumentString<AdminSaveLibraryItemMutation, AdminSaveLibraryItemMutationVariables>;
+export const AdminDeleteLibraryItemDocument = new TypedDocumentString(`
+    mutation AdminDeleteLibraryItem($id: String!) {
+  adminDeleteLibraryItem(id: $id)
+}
+    `) as unknown as TypedDocumentString<AdminDeleteLibraryItemMutation, AdminDeleteLibraryItemMutationVariables>;
+export const AdminArticlesDocument = new TypedDocumentString(`
+    query AdminArticles($page: Int, $limit: Int, $search: String, $active: Boolean, $phase: CyclePhase) {
+  adminBlogArticles(
+    page: $page
+    limit: $limit
+    search: $search
+    active: $active
+    phase: $phase
+  ) {
+    total
+    page
+    limit
+    nodes {
+      id
+      slug
+      title
+      url
+      cover_image
+      first_para
+      phase_tags
+      interest_tags
+      topic_tags
+      published_at
+      is_active
+      impressions
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminArticlesQuery, AdminArticlesQueryVariables>;
+export const AdminDayRowsDocument = new TypedDocumentString(`
+    query AdminDayRows {
+  adminCycleDayRows {
+    row_id
+    phase
+    phase_position
+    variation
+    body_text
+    energy_text
+  }
+}
+    `) as unknown as TypedDocumentString<AdminDayRowsQuery, AdminDayRowsQueryVariables>;
+export const AdminFactsDocument = new TypedDocumentString(`
+    query AdminFacts($page: Int, $limit: Int, $search: String, $category: String, $active: Boolean) {
+  adminDidYouKnow(
+    page: $page
+    limit: $limit
+    search: $search
+    category: $category
+    active: $active
+  ) {
+    total
+    page
+    limit
+    nodes {
+      id
+      external_id
+      category
+      title
+      full_text
+      source_url
+      is_active
+      position
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminFactsQuery, AdminFactsQueryVariables>;
+export const AdminLibraryDocument = new TypedDocumentString(`
+    query AdminLibrary($page: Int, $limit: Int, $kind: ContentKind, $phase: CyclePhase, $search: String, $active: Boolean) {
+  adminLibraryItems(
+    page: $page
+    limit: $limit
+    kind: $kind
+    phase: $phase
+    search: $search
+    active: $active
+  ) {
+    total
+    page
+    limit
+    nodes {
+      id
+      kind
+      phase
+      title
+      body
+      details {
+        icon
+        title
+        body
+      }
+      is_active
+      updated_at
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminLibraryQuery, AdminLibraryQueryVariables>;
+export const AdminCardsDocument = new TypedDocumentString(`
+    query AdminCards($page: Int, $limit: Int, $set: String, $phase: CyclePhase, $position: PhasePosition, $time: TimeOfDay, $search: String) {
+  adminSmartCards(
+    page: $page
+    limit: $limit
+    set: $set
+    phase: $phase
+    phase_position: $position
+    time_of_day: $time
+    search: $search
+  ) {
+    total
+    page
+    limit
+    nodes {
+      id
+      set
+      phase
+      phase_position
+      time_of_day
+      content_type
+      tone
+      headline
+      explanation
+      mind
+      hydration_tip
+      source
+      source_detail
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminCardsQuery, AdminCardsQueryVariables>;
 export const AdminMemberDocument = new TypedDocumentString(`
     query AdminMember($id: String!) {
   adminMe {

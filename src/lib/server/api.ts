@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import type { TypedDocumentString } from "@/lib/gql/graphql";
 import { ACCESS_COOKIE, API_URL } from "./session";
 
@@ -61,8 +61,11 @@ export async function adminRequest<TResult, TVariables>(
   return body.data as TResult;
 }
 
-/** For Server Actions: the error text to show, never a stack. */
-export const errorMessage = (error: unknown) =>
-  error instanceof AdminApiError
-    ? error.message
-    : "Something went wrong. Please try again.";
+/**
+ * For Server Actions: the error text to show, never a stack. Next's own control-flow errors
+ * (the sign-in redirect when the session is over) are re-thrown so they still navigate.
+ */
+export const errorMessage = (error: unknown) => {
+  unstable_rethrow(error);
+  return error instanceof AdminApiError ? error.message : "Something went wrong. Please try again.";
+};
