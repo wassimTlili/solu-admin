@@ -78,7 +78,7 @@ export default async function LibraryPage({ searchParams }: PageProps<"/content/
         ))}
       </nav>
       <p className="max-w-3xl text-sm text-muted-foreground">
-        {KINDS.find((item) => item.value === kind)?.blurb} Items for the member's phase are used first; items with no phase
+        {KINDS.find((item) => item.value === kind)?.blurb} Items for the member&apos;s phase are used first; items with no phase
         fill in when there are none.
       </p>
 
