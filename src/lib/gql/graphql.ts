@@ -13,6 +13,98 @@ export type AdminRefreshInput = {
   refresh_token: string;
 };
 
+export type AdminSuspendUserInput = {
+  /** Shown in the audit log; keep it factual */
+  reason: string;
+  user_id: string;
+};
+
+export type AdminUserFilterInput = {
+  city?: string | null | undefined;
+  cycle_type?: CycleType | null | undefined;
+  /** Joined on or after (YYYY-MM-DD) */
+  joined_from?: string | null | undefined;
+  /** Joined on or before (YYYY-MM-DD) */
+  joined_to?: string | null | undefined;
+  role?: UserRole | null | undefined;
+  /** Name, email or username */
+  search?: string | null | undefined;
+  sort?: string | null | undefined;
+  status?: UserStatus | null | undefined;
+};
+
+/** Phase of the menstrual cycle */
+export type CyclePhase =
+  | 'FOLLICULAR'
+  | 'LUTEAL'
+  | 'MENSTRUAL'
+  | 'OVULATION';
+
+/** Natural, hormonal contraception, post-pill, irregular (spec v4 G5), or unsure (pre-v4) */
+export type CycleType =
+  | 'CONTRACEPTION'
+  | 'IRREGULAR'
+  | 'NATURAL'
+  | 'NOT_SURE'
+  | 'POST_PILL';
+
+/** Role of the user */
+export type UserRole =
+  | 'ADMIN'
+  | 'USER';
+
+/** Status of the user */
+export type UserStatus =
+  | 'ACTIVE'
+  | 'DELETED'
+  | 'INACTIVE'
+  | 'SUSPENDED';
+
+export type AdminMemberQueryVariables = Exact<{
+  id: string;
+}>;
+
+
+export type AdminMemberQuery = { adminMe: { id: string }, adminUser: { id: string, email: string, first_name: string, last_name: string, username: string | null, image_url: string | null, status: UserStatus, role: UserRole, location: string | null, login_provider: string | null, cycle_type: CycleType | null, phase: CyclePhase | null, cycle_day: number | null, cycle_length: number | null, timezone: string | null, age: number | null, suspended_at: string | null, suspension_reason: string | null, lifetime_points: number, level: string, invited_by: string | null, device_platforms: Array<string>, group_names: Array<string>, created_at: string, last_login: string | null, counts: { posts: number, comments: number, groups: number, hangout_bookings: number, moods: number, journal_entries: number, period_logs: number, active_goals: number, badges: number, friends: number, devices: number, active_days_30: number }, recent_posts: Array<{ id: string, excerpt: string, group_name: string, status: string, created_at: string }> }, adminAuditLog: { nodes: Array<{ id: string, action: string, details: unknown, created_at: string, admin_email: string | null }> } };
+
+export type AdminSuspendMutationVariables = Exact<{
+  input: AdminSuspendUserInput;
+}>;
+
+
+export type AdminSuspendMutation = { adminSuspendUser: { id: string, status: UserStatus } };
+
+export type AdminReactivateMutationVariables = Exact<{
+  id: string;
+}>;
+
+
+export type AdminReactivateMutation = { adminReactivateUser: { id: string, status: UserStatus } };
+
+export type AdminSetRoleMutationVariables = Exact<{
+  id: string;
+  role: UserRole;
+}>;
+
+
+export type AdminSetRoleMutation = { adminSetUserRole: { id: string, role: UserRole } };
+
+export type AdminDeleteMemberMutationVariables = Exact<{
+  id: string;
+}>;
+
+
+export type AdminDeleteMemberMutation = { adminDeleteUser: boolean };
+
+export type AdminMembersQueryVariables = Exact<{
+  page?: number | null | undefined;
+  limit?: number | null | undefined;
+  filter?: AdminUserFilterInput | null | undefined;
+}>;
+
+
+export type AdminMembersQuery = { adminUsers: { total: number, page: number, limit: number, nodes: Array<{ id: string, email: string, first_name: string, last_name: string, username: string | null, image_url: string | null, status: UserStatus, role: UserRole, location: string | null, cycle_type: CycleType | null, phase: CyclePhase | null, created_at: string, last_login: string | null }> } };
+
 export type AdminOverviewQueryVariables = Exact<{
   days?: number | null | undefined;
 }>;
@@ -58,6 +150,123 @@ export class TypedDocumentString<TResult, TVariables>
   }
 }
 
+export const AdminMemberDocument = new TypedDocumentString(`
+    query AdminMember($id: String!) {
+  adminMe {
+    id
+  }
+  adminUser(id: $id) {
+    id
+    email
+    first_name
+    last_name
+    username
+    image_url
+    status
+    role
+    location
+    login_provider
+    cycle_type
+    phase
+    cycle_day
+    cycle_length
+    timezone
+    age
+    suspended_at
+    suspension_reason
+    lifetime_points
+    level
+    invited_by
+    device_platforms
+    group_names
+    created_at
+    last_login
+    counts {
+      posts
+      comments
+      groups
+      hangout_bookings
+      moods
+      journal_entries
+      period_logs
+      active_goals
+      badges
+      friends
+      devices
+      active_days_30
+    }
+    recent_posts {
+      id
+      excerpt
+      group_name
+      status
+      created_at
+    }
+  }
+  adminAuditLog(target_type: "user", target_id: $id, limit: 10) {
+    nodes {
+      id
+      action
+      details
+      created_at
+      admin_email
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminMemberQuery, AdminMemberQueryVariables>;
+export const AdminSuspendDocument = new TypedDocumentString(`
+    mutation AdminSuspend($input: AdminSuspendUserInput!) {
+  adminSuspendUser(input: $input) {
+    id
+    status
+  }
+}
+    `) as unknown as TypedDocumentString<AdminSuspendMutation, AdminSuspendMutationVariables>;
+export const AdminReactivateDocument = new TypedDocumentString(`
+    mutation AdminReactivate($id: String!) {
+  adminReactivateUser(user_id: $id) {
+    id
+    status
+  }
+}
+    `) as unknown as TypedDocumentString<AdminReactivateMutation, AdminReactivateMutationVariables>;
+export const AdminSetRoleDocument = new TypedDocumentString(`
+    mutation AdminSetRole($id: String!, $role: UserRole!) {
+  adminSetUserRole(user_id: $id, role: $role) {
+    id
+    role
+  }
+}
+    `) as unknown as TypedDocumentString<AdminSetRoleMutation, AdminSetRoleMutationVariables>;
+export const AdminDeleteMemberDocument = new TypedDocumentString(`
+    mutation AdminDeleteMember($id: String!) {
+  adminDeleteUser(user_id: $id)
+}
+    `) as unknown as TypedDocumentString<AdminDeleteMemberMutation, AdminDeleteMemberMutationVariables>;
+export const AdminMembersDocument = new TypedDocumentString(`
+    query AdminMembers($page: Int, $limit: Int, $filter: AdminUserFilterInput) {
+  adminUsers(page: $page, limit: $limit, filter: $filter) {
+    total
+    page
+    limit
+    nodes {
+      id
+      email
+      first_name
+      last_name
+      username
+      image_url
+      status
+      role
+      location
+      cycle_type
+      phase
+      created_at
+      last_login
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminMembersQuery, AdminMembersQueryVariables>;
 export const AdminOverviewDocument = new TypedDocumentString(`
     query AdminOverview($days: Int) {
   adminOverview(days: $days) {
