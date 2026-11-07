@@ -13,6 +13,13 @@ export type AdminRefreshInput = {
   refresh_token: string;
 };
 
+export type AdminOverviewQueryVariables = Exact<{
+  days?: number | null | undefined;
+}>;
+
+
+export type AdminOverviewQuery = { adminOverview: { range_days: number, from: string, to: string, kpis: { total_members: number, new_members: number, new_members_previous: number, active_today: number, active_week: number, active_month: number, stickiness: number, with_cycle: number, push_reachable: number, suspended: number }, series: Array<{ key: string, points: Array<{ date: string, value: number }> }>, cycle_types: Array<{ key: string, label: string, count: number }>, phases_today: Array<{ key: string, label: string, count: number }>, cities: Array<{ key: string, label: string, count: number }>, glow_levels: Array<{ key: string, label: string, count: number }>, interests: Array<{ key: string, label: string, count: number }>, moods: Array<{ key: string, label: string, count: number }>, goals: Array<{ key: string, label: string, count: number }>, community: { posts: number, comments: number, likes: number, groups: number, bookings: number, upcoming_hangouts: number }, top_groups: Array<{ key: string, label: string, count: number }>, content: { insight_views: number, insight_views_set_a: number, insight_views_set_b: number, discoveries_shown: number, discoveries_dismissed: number, article_impressions: number, ai_questions: number }, top_articles: Array<{ key: string, label: string, count: number }>, notifications: { sent: number, read: number, by_topic: Array<{ key: string, label: string, count: number }> } } };
+
 export type AdminLoginMutationVariables = Exact<{
   input: AdminLoginInput;
 }>;
@@ -51,6 +58,105 @@ export class TypedDocumentString<TResult, TVariables>
   }
 }
 
+export const AdminOverviewDocument = new TypedDocumentString(`
+    query AdminOverview($days: Int) {
+  adminOverview(days: $days) {
+    range_days
+    from
+    to
+    kpis {
+      total_members
+      new_members
+      new_members_previous
+      active_today
+      active_week
+      active_month
+      stickiness
+      with_cycle
+      push_reachable
+      suspended
+    }
+    series {
+      key
+      points {
+        date
+        value
+      }
+    }
+    cycle_types {
+      key
+      label
+      count
+    }
+    phases_today {
+      key
+      label
+      count
+    }
+    cities {
+      key
+      label
+      count
+    }
+    glow_levels {
+      key
+      label
+      count
+    }
+    interests {
+      key
+      label
+      count
+    }
+    moods {
+      key
+      label
+      count
+    }
+    goals {
+      key
+      label
+      count
+    }
+    community {
+      posts
+      comments
+      likes
+      groups
+      bookings
+      upcoming_hangouts
+    }
+    top_groups {
+      key
+      label
+      count
+    }
+    content {
+      insight_views
+      insight_views_set_a
+      insight_views_set_b
+      discoveries_shown
+      discoveries_dismissed
+      article_impressions
+      ai_questions
+    }
+    top_articles {
+      key
+      label
+      count
+    }
+    notifications {
+      sent
+      read
+      by_topic {
+        key
+        label
+        count
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminOverviewQuery, AdminOverviewQueryVariables>;
 export const AdminLoginDocument = new TypedDocumentString(`
     mutation AdminLogin($input: AdminLoginInput!) {
   adminLogin(input: $input) {
