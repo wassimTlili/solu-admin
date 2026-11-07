@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Send } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate, PhaseDot, StatusBadge, timeAgo } from "@/components/data/bits";
 import { StatRows } from "@/components/overview/stats";
@@ -110,13 +111,20 @@ export default async function MemberPage({ params }: PageProps<"/members/[id]">)
               <span className="text-muted-foreground">Joined {formatDate(user.created_at)}</span>
             </div>
           </div>
-          <MemberActions
-            id={user.id}
-            email={user.email}
-            status={user.status}
-            role={user.role}
-            isSelf={user.id === adminMe.id}
-          />
+          <div className="flex flex-wrap items-start gap-2">
+            {user.status === "ACTIVE" ? (
+              <Link href={`/notifications?to=${user.id}`} className={buttonVariants({ variant: "outline" })}>
+                <Send /> Send a notification
+              </Link>
+            ) : null}
+            <MemberActions
+              id={user.id}
+              email={user.email}
+              status={user.status}
+              role={user.role}
+              isSelf={user.id === adminMe.id}
+            />
+          </div>
         </CardContent>
       </Card>
 

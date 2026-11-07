@@ -3,9 +3,33 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
+/**
+ * Dates are shown in the team's time zone, wherever the page renders (Vercel servers run in
+ * UTC). Set NEXT_PUBLIC_ADMIN_TIME_ZONE to change it.
+ */
+export const ADMIN_TIME_ZONE = process.env.NEXT_PUBLIC_ADMIN_TIME_ZONE || "Asia/Dubai";
+
+/** A "YYYY-MM-DDTHH:mm" wall-clock time in the team's time zone, as a real instant. */
+export const teamTimeToDate = (local: string): Date => {
+  const asUtc = new Date(`${local}:00Z`);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: ADMIN_TIME_ZONE,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).formatToParts(asUtc);
+  const part = (type: string) => Number(parts.find((item) => item.type === type)?.value);
+  const shown = Date.UTC(part("year"), part("month") - 1, part("day"), part("hour"), part("minute"));
+  return new Date(asUtc.getTime() - (shown - asUtc.getTime()));
+};
+
 export const formatDate = (value: string | null | undefined, withTime = false) =>
   value
     ? new Date(value).toLocaleString("en-GB", {
+        timeZone: ADMIN_TIME_ZONE,
         day: "numeric",
         month: "short",
         year: "numeric",
@@ -33,6 +57,11 @@ const STATUS_STYLES: Record<string, string> = {
   PUBLISHED: "bg-emerald-500/12 text-emerald-700",
   ARCHIVED: "bg-neutral-500/15 text-neutral-600",
   REJECTED: "bg-rose-500/12 text-rose-700",
+  SCHEDULED: "bg-violet-500/12 text-violet-700",
+  SENDING: "bg-amber-500/15 text-amber-700",
+  SENT: "bg-emerald-500/12 text-emerald-700",
+  CANCELLED: "bg-neutral-500/15 text-neutral-600",
+  FAILED: "bg-rose-500/12 text-rose-700",
 };
 
 export function StatusBadge({ status }: { status: string }) {

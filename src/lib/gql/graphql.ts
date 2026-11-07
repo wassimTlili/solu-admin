@@ -4,6 +4,22 @@ type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 import type { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
+export type AdminAudienceInput = {
+  /** Opened the app in the last N days */
+  active_within_days?: number | null | undefined;
+  /** City names (matched in her location) */
+  cities?: Array<string> | null | undefined;
+  cycle_types?: Array<CycleType> | null | undefined;
+  /** Joined in the last N days */
+  joined_within_days?: number | null | undefined;
+  /** ALL, FILTER or MEMBERS */
+  kind: string;
+  /** Her phase on the day it is sent */
+  phases?: Array<CyclePhase> | null | undefined;
+  /** MEMBERS: the chosen members */
+  user_ids?: Array<string> | null | undefined;
+};
+
 export type AdminBlogArticleInput = {
   cover_image?: string | null | undefined;
   first_para?: string | null | undefined;
@@ -13,6 +29,16 @@ export type AdminBlogArticleInput = {
   phase_tags: Array<CyclePhase>;
   title: string;
   topic_tags: Array<string>;
+};
+
+export type AdminCampaignInput = {
+  audience: AdminAudienceInput;
+  body: string;
+  /** Screen a tap opens: today, cycle, progress, glow-up, goals, badges, friends, notifications */
+  route: string;
+  /** Omit to send now */
+  send_at?: string | null | undefined;
+  title: string;
 };
 
 export type AdminCycleDayRowInput = {
@@ -85,6 +111,12 @@ export type AdminSuspendUserInput = {
   user_id: string;
 };
 
+export type AdminTestCampaignInput = {
+  body: string;
+  route: string;
+  title: string;
+};
+
 export type AdminUserFilterInput = {
   city?: string | null | undefined;
   cycle_type?: CycleType | null | undefined;
@@ -98,6 +130,14 @@ export type AdminUserFilterInput = {
   sort?: string | null | undefined;
   status?: UserStatus | null | undefined;
 };
+
+/** Where a dashboard notification campaign is: scheduled, sending, sent, cancelled or failed */
+export type CampaignStatus =
+  | 'CANCELLED'
+  | 'FAILED'
+  | 'SCHEDULED'
+  | 'SENDING'
+  | 'SENT';
 
 /** Kind of daily content card */
 export type ContentKind =
@@ -312,6 +352,55 @@ export type AdminMembersQueryVariables = Exact<{
 
 
 export type AdminMembersQuery = { adminUsers: { total: number, page: number, limit: number, nodes: Array<{ id: string, email: string, first_name: string, last_name: string, username: string | null, image_url: string | null, status: UserStatus, role: UserRole, location: string | null, cycle_type: CycleType | null, phase: CyclePhase | null, created_at: string, last_login: string | null }> } };
+
+export type AdminAudienceCountQueryVariables = Exact<{
+  audience: AdminAudienceInput;
+}>;
+
+
+export type AdminAudienceCountQuery = { adminAudienceCount: { members: number, reachable: number } };
+
+export type AdminCampaignMemberSearchQueryVariables = Exact<{
+  search?: string | null | undefined;
+}>;
+
+
+export type AdminCampaignMemberSearchQuery = { adminUsers: { nodes: Array<{ id: string, first_name: string, last_name: string, email: string, image_url: string | null }> } };
+
+export type AdminCreateCampaignMutationVariables = Exact<{
+  input: AdminCampaignInput;
+}>;
+
+
+export type AdminCreateCampaignMutation = { adminCreateCampaign: { id: string, status: CampaignStatus, recipients: number, pushed: number, queued: number, inbox_only: number } };
+
+export type AdminCancelCampaignMutationVariables = Exact<{
+  id: string;
+}>;
+
+
+export type AdminCancelCampaignMutation = { adminCancelCampaign: { id: string, status: CampaignStatus } };
+
+export type AdminTestCampaignMutationVariables = Exact<{
+  input: AdminTestCampaignInput;
+}>;
+
+
+export type AdminTestCampaignMutation = { adminTestCampaign: { pushed: number, devices: number, queued: boolean } };
+
+export type AdminCampaignHistoryQueryVariables = Exact<{
+  page?: number | null | undefined;
+}>;
+
+
+export type AdminCampaignHistoryQuery = { adminCampaigns: { total: number, page: number, limit: number, nodes: Array<{ id: string, title: string, body: string, audience_label: string, status: CampaignStatus, scheduled_at: string | null, sent_at: string | null, error: string | null, recipients: number, pushed: number, queued: number, inbox_only: number, created_by_name: string | null, created_at: string }> } };
+
+export type AdminCampaignRecipientQueryVariables = Exact<{
+  id: string;
+}>;
+
+
+export type AdminCampaignRecipientQuery = { adminUser: { id: string, first_name: string, last_name: string, email: string, image_url: string | null, status: UserStatus } };
 
 export type AdminOverviewQueryVariables = Exact<{
   days?: number | null | undefined;
@@ -665,6 +754,93 @@ export const AdminMembersDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AdminMembersQuery, AdminMembersQueryVariables>;
+export const AdminAudienceCountDocument = new TypedDocumentString(`
+    query AdminAudienceCount($audience: AdminAudienceInput!) {
+  adminAudienceCount(audience: $audience) {
+    members
+    reachable
+  }
+}
+    `) as unknown as TypedDocumentString<AdminAudienceCountQuery, AdminAudienceCountQueryVariables>;
+export const AdminCampaignMemberSearchDocument = new TypedDocumentString(`
+    query AdminCampaignMemberSearch($search: String) {
+  adminUsers(limit: 8, filter: { search: $search, status: ACTIVE }) {
+    nodes {
+      id
+      first_name
+      last_name
+      email
+      image_url
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminCampaignMemberSearchQuery, AdminCampaignMemberSearchQueryVariables>;
+export const AdminCreateCampaignDocument = new TypedDocumentString(`
+    mutation AdminCreateCampaign($input: AdminCampaignInput!) {
+  adminCreateCampaign(input: $input) {
+    id
+    status
+    recipients
+    pushed
+    queued
+    inbox_only
+  }
+}
+    `) as unknown as TypedDocumentString<AdminCreateCampaignMutation, AdminCreateCampaignMutationVariables>;
+export const AdminCancelCampaignDocument = new TypedDocumentString(`
+    mutation AdminCancelCampaign($id: String!) {
+  adminCancelCampaign(id: $id) {
+    id
+    status
+  }
+}
+    `) as unknown as TypedDocumentString<AdminCancelCampaignMutation, AdminCancelCampaignMutationVariables>;
+export const AdminTestCampaignDocument = new TypedDocumentString(`
+    mutation AdminTestCampaign($input: AdminTestCampaignInput!) {
+  adminTestCampaign(input: $input) {
+    pushed
+    devices
+    queued
+  }
+}
+    `) as unknown as TypedDocumentString<AdminTestCampaignMutation, AdminTestCampaignMutationVariables>;
+export const AdminCampaignHistoryDocument = new TypedDocumentString(`
+    query AdminCampaignHistory($page: Int) {
+  adminCampaigns(page: $page, limit: 15) {
+    total
+    page
+    limit
+    nodes {
+      id
+      title
+      body
+      audience_label
+      status
+      scheduled_at
+      sent_at
+      error
+      recipients
+      pushed
+      queued
+      inbox_only
+      created_by_name
+      created_at
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<AdminCampaignHistoryQuery, AdminCampaignHistoryQueryVariables>;
+export const AdminCampaignRecipientDocument = new TypedDocumentString(`
+    query AdminCampaignRecipient($id: String!) {
+  adminUser(id: $id) {
+    id
+    first_name
+    last_name
+    email
+    image_url
+    status
+  }
+}
+    `) as unknown as TypedDocumentString<AdminCampaignRecipientQuery, AdminCampaignRecipientQueryVariables>;
 export const AdminOverviewDocument = new TypedDocumentString(`
     query AdminOverview($days: Int) {
   adminOverview(days: $days) {

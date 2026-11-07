@@ -36,6 +36,13 @@ type Documents = {
     "\n  mutation AdminSetRole($id: String!, $role: UserRole!) {\n    adminSetUserRole(user_id: $id, role: $role) { id role }\n  }\n": typeof types.AdminSetRoleDocument,
     "\n  mutation AdminDeleteMember($id: String!) {\n    adminDeleteUser(user_id: $id)\n  }\n": typeof types.AdminDeleteMemberDocument,
     "\n  query AdminMembers($page: Int, $limit: Int, $filter: AdminUserFilterInput) {\n    adminUsers(page: $page, limit: $limit, filter: $filter) {\n      total\n      page\n      limit\n      nodes {\n        id\n        email\n        first_name\n        last_name\n        username\n        image_url\n        status\n        role\n        location\n        cycle_type\n        phase\n        created_at\n        last_login\n      }\n    }\n  }\n": typeof types.AdminMembersDocument,
+    "\n  query AdminAudienceCount($audience: AdminAudienceInput!) {\n    adminAudienceCount(audience: $audience) { members reachable }\n  }\n": typeof types.AdminAudienceCountDocument,
+    "\n  query AdminCampaignMemberSearch($search: String) {\n    adminUsers(limit: 8, filter: { search: $search, status: ACTIVE }) {\n      nodes { id first_name last_name email image_url }\n    }\n  }\n": typeof types.AdminCampaignMemberSearchDocument,
+    "\n  mutation AdminCreateCampaign($input: AdminCampaignInput!) {\n    adminCreateCampaign(input: $input) { id status recipients pushed queued inbox_only }\n  }\n": typeof types.AdminCreateCampaignDocument,
+    "\n  mutation AdminCancelCampaign($id: String!) {\n    adminCancelCampaign(id: $id) { id status }\n  }\n": typeof types.AdminCancelCampaignDocument,
+    "\n  mutation AdminTestCampaign($input: AdminTestCampaignInput!) {\n    adminTestCampaign(input: $input) { pushed devices queued }\n  }\n": typeof types.AdminTestCampaignDocument,
+    "\n  query AdminCampaignHistory($page: Int) {\n    adminCampaigns(page: $page, limit: 15) {\n      total\n      page\n      limit\n      nodes {\n        id\n        title\n        body\n        audience_label\n        status\n        scheduled_at\n        sent_at\n        error\n        recipients\n        pushed\n        queued\n        inbox_only\n        created_by_name\n        created_at\n      }\n    }\n  }\n": typeof types.AdminCampaignHistoryDocument,
+    "\n  query AdminCampaignRecipient($id: String!) {\n    adminUser(id: $id) { id first_name last_name email image_url status }\n  }\n": typeof types.AdminCampaignRecipientDocument,
     "\n  query AdminOverview($days: Int) {\n    adminOverview(days: $days) {\n      range_days\n      from\n      to\n      kpis {\n        total_members\n        new_members\n        new_members_previous\n        active_today\n        active_week\n        active_month\n        stickiness\n        with_cycle\n        push_reachable\n        suspended\n      }\n      series { key points { date value } }\n      cycle_types { key label count }\n      phases_today { key label count }\n      cities { key label count }\n      glow_levels { key label count }\n      interests { key label count }\n      moods { key label count }\n      goals { key label count }\n      community { posts comments likes groups bookings upcoming_hangouts }\n      top_groups { key label count }\n      content {\n        insight_views\n        insight_views_set_a\n        insight_views_set_b\n        discoveries_shown\n        discoveries_dismissed\n        article_impressions\n        ai_questions\n      }\n      top_articles { key label count }\n      notifications { sent read by_topic { key label count } }\n    }\n  }\n": typeof types.AdminOverviewDocument,
     "\n  mutation AdminLogin($input: AdminLoginInput!) {\n    adminLogin(input: $input) {\n      access_token\n      refresh_token\n      expires_in\n    }\n  }\n": typeof types.AdminLoginDocument,
     "\n  query AdminMe {\n    adminMe {\n      id\n      email\n      first_name\n      last_name\n      image_url\n    }\n  }\n": typeof types.AdminMeDocument,
@@ -63,6 +70,13 @@ const documents: Documents = {
     "\n  mutation AdminSetRole($id: String!, $role: UserRole!) {\n    adminSetUserRole(user_id: $id, role: $role) { id role }\n  }\n": types.AdminSetRoleDocument,
     "\n  mutation AdminDeleteMember($id: String!) {\n    adminDeleteUser(user_id: $id)\n  }\n": types.AdminDeleteMemberDocument,
     "\n  query AdminMembers($page: Int, $limit: Int, $filter: AdminUserFilterInput) {\n    adminUsers(page: $page, limit: $limit, filter: $filter) {\n      total\n      page\n      limit\n      nodes {\n        id\n        email\n        first_name\n        last_name\n        username\n        image_url\n        status\n        role\n        location\n        cycle_type\n        phase\n        created_at\n        last_login\n      }\n    }\n  }\n": types.AdminMembersDocument,
+    "\n  query AdminAudienceCount($audience: AdminAudienceInput!) {\n    adminAudienceCount(audience: $audience) { members reachable }\n  }\n": types.AdminAudienceCountDocument,
+    "\n  query AdminCampaignMemberSearch($search: String) {\n    adminUsers(limit: 8, filter: { search: $search, status: ACTIVE }) {\n      nodes { id first_name last_name email image_url }\n    }\n  }\n": types.AdminCampaignMemberSearchDocument,
+    "\n  mutation AdminCreateCampaign($input: AdminCampaignInput!) {\n    adminCreateCampaign(input: $input) { id status recipients pushed queued inbox_only }\n  }\n": types.AdminCreateCampaignDocument,
+    "\n  mutation AdminCancelCampaign($id: String!) {\n    adminCancelCampaign(id: $id) { id status }\n  }\n": types.AdminCancelCampaignDocument,
+    "\n  mutation AdminTestCampaign($input: AdminTestCampaignInput!) {\n    adminTestCampaign(input: $input) { pushed devices queued }\n  }\n": types.AdminTestCampaignDocument,
+    "\n  query AdminCampaignHistory($page: Int) {\n    adminCampaigns(page: $page, limit: 15) {\n      total\n      page\n      limit\n      nodes {\n        id\n        title\n        body\n        audience_label\n        status\n        scheduled_at\n        sent_at\n        error\n        recipients\n        pushed\n        queued\n        inbox_only\n        created_by_name\n        created_at\n      }\n    }\n  }\n": types.AdminCampaignHistoryDocument,
+    "\n  query AdminCampaignRecipient($id: String!) {\n    adminUser(id: $id) { id first_name last_name email image_url status }\n  }\n": types.AdminCampaignRecipientDocument,
     "\n  query AdminOverview($days: Int) {\n    adminOverview(days: $days) {\n      range_days\n      from\n      to\n      kpis {\n        total_members\n        new_members\n        new_members_previous\n        active_today\n        active_week\n        active_month\n        stickiness\n        with_cycle\n        push_reachable\n        suspended\n      }\n      series { key points { date value } }\n      cycle_types { key label count }\n      phases_today { key label count }\n      cities { key label count }\n      glow_levels { key label count }\n      interests { key label count }\n      moods { key label count }\n      goals { key label count }\n      community { posts comments likes groups bookings upcoming_hangouts }\n      top_groups { key label count }\n      content {\n        insight_views\n        insight_views_set_a\n        insight_views_set_b\n        discoveries_shown\n        discoveries_dismissed\n        article_impressions\n        ai_questions\n      }\n      top_articles { key label count }\n      notifications { sent read by_topic { key label count } }\n    }\n  }\n": types.AdminOverviewDocument,
     "\n  mutation AdminLogin($input: AdminLoginInput!) {\n    adminLogin(input: $input) {\n      access_token\n      refresh_token\n      expires_in\n    }\n  }\n": types.AdminLoginDocument,
     "\n  query AdminMe {\n    adminMe {\n      id\n      email\n      first_name\n      last_name\n      image_url\n    }\n  }\n": types.AdminMeDocument,
@@ -153,6 +167,34 @@ export function graphql(source: "\n  mutation AdminDeleteMember($id: String!) {\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query AdminMembers($page: Int, $limit: Int, $filter: AdminUserFilterInput) {\n    adminUsers(page: $page, limit: $limit, filter: $filter) {\n      total\n      page\n      limit\n      nodes {\n        id\n        email\n        first_name\n        last_name\n        username\n        image_url\n        status\n        role\n        location\n        cycle_type\n        phase\n        created_at\n        last_login\n      }\n    }\n  }\n"): typeof import('./graphql').AdminMembersDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminAudienceCount($audience: AdminAudienceInput!) {\n    adminAudienceCount(audience: $audience) { members reachable }\n  }\n"): typeof import('./graphql').AdminAudienceCountDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminCampaignMemberSearch($search: String) {\n    adminUsers(limit: 8, filter: { search: $search, status: ACTIVE }) {\n      nodes { id first_name last_name email image_url }\n    }\n  }\n"): typeof import('./graphql').AdminCampaignMemberSearchDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminCreateCampaign($input: AdminCampaignInput!) {\n    adminCreateCampaign(input: $input) { id status recipients pushed queued inbox_only }\n  }\n"): typeof import('./graphql').AdminCreateCampaignDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminCancelCampaign($id: String!) {\n    adminCancelCampaign(id: $id) { id status }\n  }\n"): typeof import('./graphql').AdminCancelCampaignDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AdminTestCampaign($input: AdminTestCampaignInput!) {\n    adminTestCampaign(input: $input) { pushed devices queued }\n  }\n"): typeof import('./graphql').AdminTestCampaignDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminCampaignHistory($page: Int) {\n    adminCampaigns(page: $page, limit: 15) {\n      total\n      page\n      limit\n      nodes {\n        id\n        title\n        body\n        audience_label\n        status\n        scheduled_at\n        sent_at\n        error\n        recipients\n        pushed\n        queued\n        inbox_only\n        created_by_name\n        created_at\n      }\n    }\n  }\n"): typeof import('./graphql').AdminCampaignHistoryDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminCampaignRecipient($id: String!) {\n    adminUser(id: $id) { id first_name last_name email image_url status }\n  }\n"): typeof import('./graphql').AdminCampaignRecipientDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
