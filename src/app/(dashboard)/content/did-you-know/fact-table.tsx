@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { DeleteButton, Field, Select, useSave } from "@/components/content/form";
-import { DYK_CATEGORIES } from "@/components/content/options";
+import { DYK_CATEGORIES, dykPrefix } from "@/components/content/options";
 import type { AdminFactsQuery } from "@/lib/gql/graphql";
 import { deleteFact, saveFact } from "../actions";
 
@@ -95,7 +95,6 @@ export function FactTable({ facts }: { facts: Fact[] }) {
 
 function FactForm({ fact, onDone }: { fact: Fact | null; onDone: () => void }) {
   const { pending, run } = useSave();
-  const [externalId, setExternalId] = useState(fact?.external_id ?? "");
   const [category, setCategory] = useState(fact?.category ?? DYK_CATEGORIES[0]);
   const [title, setTitle] = useState(fact?.title ?? "");
   const [fullText, setFullText] = useState(fact?.full_text ?? "");
@@ -128,12 +127,22 @@ function FactForm({ fact, onDone }: { fact: Fact | null; onDone: () => void }) {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Id" hint="Optional, e.g. DYK-CAB-22">
-            <Input
-              value={externalId}
-              onChange={(event) => setExternalId(event.target.value.toUpperCase())}
-              className="bg-white/60 font-mono"
-            />
+          <Field
+            label="Id"
+            hint={
+              fact?.external_id
+                ? "Ids don't change, even if the category does."
+                : "Numbered automatically from the category when you save."
+            }
+          >
+            <span className="flex h-8 items-center rounded-lg border border-dashed border-black/10 bg-black/[0.03] px-2.5 font-mono text-sm">
+              {fact?.external_id ?? (
+                <>
+                  {dykPrefix(category)}
+                  <span className="text-muted-foreground">-··</span>
+                </>
+              )}
+            </span>
           </Field>
           <Field label="Category">
             <Select value={category} onChange={setCategory} options={categories} />
@@ -192,15 +201,15 @@ function FactForm({ fact, onDone }: { fact: Fact | null; onDone: () => void }) {
             run(
               () =>
                 saveFact({
+                  // No id: the API numbers a new fact (DYK-{category}-NN) and never renames one.
                   id: fact?.id,
-                  external_id: externalId || null,
                   category,
                   title,
                   full_text: fullText,
                   source_url: sourceUrl || null,
                   is_active: active,
                 }),
-              fact ? "Fact saved" : "Fact added",
+              fact ? "Fact saved" : (result) => (result.id ? `Fact ${result.id} added` : "Fact added"),
               onDone,
             )
           }

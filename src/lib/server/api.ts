@@ -36,15 +36,24 @@ export async function adminRequest<TResult, TVariables>(
   const token = (await cookies()).get(ACCESS_COOKIE)?.value;
   if (!token) redirect("/login");
 
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ query: document.toString(), variables: variables ?? {} }),
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ query: document.toString(), variables: variables ?? {} }),
+      cache: "no-store",
+    });
+  } catch {
+    // Nothing answered (usually the API isn't started): one clear line instead of a stack.
+    throw new AdminApiError(
+      `The Solu API isn't answering at ${API_URL}. Start it (npm run dev:api in the Solu folder) and try again.`,
+      "API_UNREACHABLE",
+    );
+  }
 
   let body: { data?: TResult; errors?: GraphQLErrorShape[] };
   try {

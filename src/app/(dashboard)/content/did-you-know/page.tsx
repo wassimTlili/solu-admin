@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FilterSelect, Pager, param, query } from "@/components/data/bits";
+import { ImportSheet } from "@/components/content/import-sheet";
 import { DYK_CATEGORIES } from "@/components/content/options";
 import { graphql } from "@/lib/gql";
 import { adminRequest } from "@/lib/server/api";
@@ -49,10 +50,23 @@ export default async function DidYouKnowPage({ searchParams }: PageProps<"/conte
 
   return (
     <div className="grid gap-4">
-      <p className="max-w-3xl text-sm text-muted-foreground">
-        One fact a day on Today, rotating through the active facts in order (#1 first) by account age. Retired facts
-        stay here but leave the rotation.
-      </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <p className="max-w-3xl text-sm text-muted-foreground">
+          One fact a day on Today, rotating through the active facts in order (#1 first) by account age. Retired facts
+          stay here but leave the rotation.
+        </p>
+        <ImportSheet
+          kinds={["didYouKnow"]}
+          title="Import Did You Know from Excel"
+          description={
+            <>
+              The facts spreadsheet (<span className="font-mono text-xs">Solu_DidYouKnow.xlsx</span>). Facts are
+              matched by their ids (DYK-…) and updated in place; facts missing from the file leave the rotation but
+              stay listed here. Checking first writes nothing and lists exactly what would change.
+            </>
+          }
+        />
+      </div>
 
       <form className="glass flex flex-wrap items-end gap-3 rounded-xl p-3" action="/content/did-you-know">
         <label className="grid min-w-56 flex-1 gap-1 text-xs text-muted-foreground">

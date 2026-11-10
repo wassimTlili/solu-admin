@@ -6,7 +6,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { importSpreadsheets, type ImportReport } from "../actions";
+import { importSpreadsheets, type ImportReport } from "@/app/(dashboard)/content/actions";
+
+export type ImportKind = "setA" | "setB" | "didYouKnow" | "cycleDays";
+const ALL_KINDS: ImportKind[] = ["setA", "setB", "didYouKnow", "cycleDays"];
 
 const KIND_LABELS: Record<string, string> = {
   setA: "Recommendations, Set A",
@@ -14,6 +17,21 @@ const KIND_LABELS: Record<string, string> = {
   didYouKnow: "Did You Know",
   cycleDays: "Cycle-day lines",
 };
+
+/** Where a spreadsheet of another kind belongs: each content page imports its own. */
+const KIND_PAGES: Record<ImportKind, string> = {
+  setA: "Recommendations",
+  setB: "Recommendations",
+  didYouKnow: "Did You Know",
+  cycleDays: "Cycle-day lines",
+};
+
+const COUNT_TILES: { kind: ImportKind; label: string; count: (report: ImportReport) => number }[] = [
+  { kind: "setA", label: "Set A cards", count: (report) => report.counts.set_a },
+  { kind: "setB", label: "Set B cards", count: (report) => report.counts.set_b },
+  { kind: "didYouKnow", label: "Did You Know", count: (report) => report.counts.did_you_know },
+  { kind: "cycleDays", label: "Cycle-day lines", count: (report) => report.counts.cycle_days },
+];
 
 const formatBytes = (bytes: number) => (bytes < 1024 * 1024 ? `${Math.round(bytes / 1024)} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`);
 
@@ -27,7 +45,13 @@ function IdList({ ids }: { ids: string[] }) {
   );
 }
 
-export function ImportFlow() {
+/**
+ * Check, then import, the content team's spreadsheets, from each content page's "Import from
+ * Excel" button. `kinds` limits it to that page's files (Recommendations: Set A and Set B, Did
+ * You Know: the facts, Cycle-day lines: the 88 rows); a spreadsheet of another kind is named
+ * and has to be removed before importing.
+ */
+export function ImportFlow({ kinds = ALL_KINDS }: { kinds?: ImportKind[] }) {
   const input = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -71,7 +95,10 @@ export function ImportFlow() {
   const errors = report?.issues.filter((issue) => issue.level === "error") ?? [];
   const warnings = report?.issues.filter((issue) => issue.level === "warning") ?? [];
   const recognised = report?.files.filter((file) => file.kind) ?? [];
-  const canApply = report && !report.applied && recognised.length > 0 && errors.length === 0;
+  const elsewhere = recognised.filter((file) => !kinds.includes(file.kind as ImportKind));
+  const canApply =
+    report && !report.applied && recognised.length > 0 && errors.length === 0 && elsewhere.length === 0;
+  const tiles = COUNT_TILES.filter((tile) => kinds.includes(tile.kind));
   const preview = report?.preview;
   const losing =
     (preview?.cards?.removed.length ?? 0) + (preview?.didYouKnow?.retired.length ?? 0) + (preview?.cycleDays?.removed.length ?? 0);
@@ -197,22 +224,33 @@ export function ImportFlow() {
                 <CardDescription>
                   {errors.length
                     ? "Fix the errors below in the spreadsheet and check again. Nothing can be imported until then."
-                    : recognised.length
-                      ? "Rows are matched by their ids and updated in place."
-                      : "None of these files is a content spreadsheet."}
+                    : elsewhere.length
+                      ? "Remove the files that belong on another page, then check again."
+                      : recognised.length
+                        ? "Rows are matched by their ids and updated in place."
+                        : "None of these files is a content spreadsheet."}
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-4">
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {[
-                    ["Set A cards", report.counts.set_a],
-                    ["Set B cards", report.counts.set_b],
-                    ["Did You Know", report.counts.did_you_know],
-                    ["Cycle-day lines", report.counts.cycle_days],
-                  ].map(([label, count]) => (
-                    <div key={label} className="glass rounded-xl p-3">
-                      <p className="text-xs text-muted-foreground">{label}</p>
-                      <p className="text-xl font-semibold tabular-nums">{count}</p>
+                {elsewhere.length ? (
+                  <ul className="grid gap-1.5">
+                    {elsewhere.map((file) => (
+                      <li key={file.name} className="flex gap-2 rounded-lg bg-rose-500/8 px-2.5 py-1.5 text-sm">
+                        <XCircle className="mt-0.5 size-4 shrink-0 text-rose-600" />
+                        <span>
+                          <span className="font-medium">{file.name}</span> is the {KIND_LABELS[file.kind as string]}{" "}
+                          spreadsheet. Import it from the {KIND_PAGES[file.kind as ImportKind]} page.
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+
+                <div className={cn("grid gap-2", tiles.length > 2 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-2")}>
+                  {tiles.map((tile) => (
+                    <div key={tile.kind} className="glass rounded-xl p-3">
+                      <p className="text-xs text-muted-foreground">{tile.label}</p>
+                      <p className="text-xl font-semibold tabular-nums">{tile.count(report)}</p>
                     </div>
                   ))}
                 </div>
@@ -278,7 +316,7 @@ export function ImportFlow() {
                       ))}
                     </ul>
                   </div>
-                ) : recognised.length ? (
+                ) : recognised.length && !elsewhere.length ? (
                   <p className="flex items-center gap-2 text-sm text-emerald-700">
                     <CheckCircle2 className="size-4" /> No problems found.
                   </p>

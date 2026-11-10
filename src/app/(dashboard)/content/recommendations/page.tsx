@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FilterSelect, Pager, param, query } from "@/components/data/bits";
+import { ImportSheet } from "@/components/content/import-sheet";
 import { PHASES, POSITION_LABELS, TIMES, type Position } from "@/components/content/options";
 import { graphql } from "@/lib/gql";
 import type { CyclePhase, PhasePosition, TimeOfDay } from "@/lib/gql/graphql";
@@ -75,11 +76,25 @@ export default async function RecommendationsPage({ searchParams }: PageProps<"/
 
   return (
     <div className="grid gap-4">
-      <p className="max-w-3xl text-sm text-muted-foreground">
-        The smart cards on Today. Members see Set A on odd cycles and Set B on even ones, picked by phase, position
-        in the phase and time of day. The brain line shows on morning cards only; the water line on Menstrual,
-        Ovulation and Late Luteal cards.
-      </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <p className="max-w-3xl text-sm text-muted-foreground">
+          The smart cards on Today. Members see Set A on odd cycles and Set B on even ones, picked by phase, position
+          in the phase and time of day. The brain line shows on morning cards only; the water line on Menstrual,
+          Ovulation and Late Luteal cards.
+        </p>
+        <ImportSheet
+          kinds={["setA", "setB"]}
+          title="Import recommendations from Excel"
+          description={
+            <>
+              Set A (<span className="font-mono text-xs">Solu_Recommendations_v3_rewarmed.xlsx</span>), Set B (
+              <span className="font-mono text-xs">Solu_Recommendations_SetB.xlsx</span>) or both. Each file replaces
+              its whole set: cards are matched by id, and cards missing from the file are deleted. Checking first
+              writes nothing and lists exactly what would change.
+            </>
+          }
+        />
+      </div>
 
       <form className="glass flex flex-wrap items-end gap-3 rounded-xl p-3" action="/content/recommendations">
         <label className="grid min-w-56 flex-1 gap-1 text-xs text-muted-foreground">

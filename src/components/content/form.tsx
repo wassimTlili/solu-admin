@@ -18,17 +18,26 @@ import { cn } from "@/lib/utils";
 export interface ActionResult {
   ok?: boolean;
   error?: string;
+  /** The id the API gave a new row (shown in the confirmation). */
+  id?: string;
 }
 
-/** Runs a Server Action in a transition and reports the outcome as a toast. */
+/**
+ * Runs a Server Action in a transition and reports the outcome as a toast. `success` can use
+ * the result, e.g. to name the id a new row was given.
+ */
 export function useSave() {
   const [pending, startTransition] = useTransition();
-  const run = (work: () => Promise<ActionResult>, success: string, onDone?: () => void) =>
+  const run = (
+    work: () => Promise<ActionResult>,
+    success: string | ((result: ActionResult) => string),
+    onDone?: () => void,
+  ) =>
     startTransition(async () => {
       const result = await work();
       if (result?.error) toast.error(result.error);
       else {
-        toast.success(success);
+        toast.success(typeof success === "function" ? success(result) : success);
         onDone?.();
       }
     });

@@ -6,27 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login, type LoginState } from "./actions";
 
-export function LoginForm({ next, expired }: { next?: string; expired?: boolean }) {
+/** Local development only: accounts made with `npm run admin:create -- … --password`. */
+export function LoginForm({ next }: { next?: string }) {
   const [state, action, pending] = useActionState<LoginState, FormData>(login, {});
 
   return (
-    <form action={action} className="grid gap-4">
-      {expired && !state.error ? (
-        <p className="rounded-lg bg-accent px-3 py-2 text-sm text-accent-foreground">
-          Your session ended. Please sign in again.
-        </p>
-      ) : null}
+    <form action={action} className="grid gap-3">
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="username"
-          defaultValue={state.email}
-          required
-          autoFocus
-        />
+        <Input id="email" name="email" type="email" autoComplete="username" defaultValue={state.email} required />
       </div>
       <div className="grid gap-2">
         <Label htmlFor="password">Password</Label>
@@ -38,8 +26,8 @@ export function LoginForm({ next, expired }: { next?: string; expired?: boolean 
           {state.error}
         </p>
       ) : null}
-      <Button type="submit" size="lg" disabled={pending} className="w-full">
-        {pending ? "Signing in…" : "Sign in"}
+      <Button type="submit" variant="secondary" disabled={pending} className="w-full">
+        {pending ? "Signing in…" : "Sign in with email"}
       </Button>
     </form>
   );

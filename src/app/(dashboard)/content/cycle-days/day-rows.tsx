@@ -95,7 +95,10 @@ function RowForm({ phase, editing, onDone }: { phase: Phase; editing: Editing; o
   const [body, setBody] = useState(editing.row?.body_text ?? "");
   const [energy, setEnergy] = useState(editing.row?.energy_text ?? "");
   const valid = body.trim().length >= 10 && energy.trim().length >= 10 && body.length <= 1000 && energy.length <= 1000;
-  const label = `${POSITION_LABELS[editing.position]} ${phaseLabel(phase)}, variation ${editing.variation}`;
+  const days = `${POSITION_LABELS[editing.position]} ${phaseLabel(phase)}`;
+  const label = editing.row
+    ? `${days}, variation ${editing.variation}`
+    : `${days}: added as the next variation, numbered automatically.`;
 
   return (
     <>
@@ -130,11 +133,12 @@ function RowForm({ phase, editing, onDone }: { phase: Phase; editing: Editing; o
                 saveDayRow({
                   phase: phase as CyclePhase,
                   phase_position: editing.position as PhasePosition,
-                  variation: editing.variation,
+                  // Left out when adding: the API picks the next variation, so nothing is overwritten.
+                  variation: editing.row ? editing.row.variation : undefined,
                   body_text: body,
                   energy_text: energy,
                 }),
-              editing.row ? "Line saved" : "Variation added",
+              editing.row ? "Line saved" : (result) => (result.id ? `Line ${result.id} added` : "Variation added"),
               onDone,
             )
           }

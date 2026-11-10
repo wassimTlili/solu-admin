@@ -30,9 +30,12 @@ type SmartCard = AdminCardsQuery["adminSmartCards"]["nodes"][number];
 
 const TIME_CODES: Record<string, string> = { MORNING: "MOR", AFTERNOON: "AFT", EVENING: "EVE" };
 
-/** The team's id pattern: [B-]{phase}[-{position}]-{time}-NN, e.g. M-E-MOR-01 or B-O-AFT-02. */
-const suggestId = (set: string, phase: Phase, position: Position, time: string) =>
-  `${set === "B" ? "B-" : ""}${phase[0]}${position === "UNIQUE" ? "" : `-${position[0]}`}-${TIME_CODES[time]}-01`;
+/**
+ * The slot part of the team's id pattern, [B-]{phase}[-{position}]-{time}-NN (M-E-MOR-06,
+ * B-O-AFT-05). The API adds the number when the card is added, so nobody types an id.
+ */
+const slotPrefix = (set: string, phase: Phase, position: Position, time: string) =>
+  `${set === "B" ? "B-" : ""}${phase[0]}${position === "UNIQUE" ? "" : `-${position[0]}`}-${TIME_CODES[time]}`;
 
 const timeLabel = (time: string) => TIMES.find((item) => item.value === time)?.label ?? time;
 
@@ -127,8 +130,6 @@ function CardForm({ card, onDone }: { card: SmartCard | null; onDone: () => void
   const [phase, setPhase] = useState<Phase>((card?.phase as Phase) ?? "MENSTRUAL");
   const [position, setPosition] = useState<Position>((card?.phase_position as Position) ?? "EARLY");
   const [time, setTime] = useState<string>(card?.time_of_day ?? "MORNING");
-  const [id, setId] = useState(card?.id ?? suggestId("A", "MENSTRUAL", "EARLY", "MORNING"));
-  const [idTouched, setIdTouched] = useState(false);
   const [contentType, setContentType] = useState(card?.content_type ?? "mindset");
   const [tone, setTone] = useState(card?.tone ?? "");
   const [headline, setHeadline] = useState(card?.headline ?? "");
@@ -143,7 +144,7 @@ function CardForm({ card, onDone }: { card: SmartCard | null; onDone: () => void
   const morning = time === "MORNING";
   const hydrates = expectsHydration(phase, position);
 
-  // While adding, keep the suggested id in step with the choices until the admin types one.
+  // A card's slot is chosen once, when it is added (its id names the slot).
   const choose = (next: { set?: string; phase?: Phase; position?: Position; time?: string }) => {
     const nextPhase = next.phase ?? phase;
     let nextPosition = next.position ?? position;
@@ -154,20 +155,19 @@ function CardForm({ card, onDone }: { card: SmartCard | null; onDone: () => void
     setPhase(nextPhase);
     setPosition(nextPosition);
     setTime(nextTime);
-    if (isNew && !idTouched) setId(suggestId(nextSet, nextPhase, nextPosition, nextTime));
   };
 
   const withCurrent = (list: string[], current: string) =>
     (current && !list.includes(current) ? [current, ...list] : list).map((value) => ({ value, label: value }));
 
-  const valid = /^[A-Z0-9-]{3,20}$/.test(id) && headline.trim().length >= 3 && explanation.trim().length >= 3;
+  const valid = headline.trim().length >= 3 && explanation.trim().length >= 3;
 
   const submit = () =>
     run(
       () =>
         saveCard({
-          id,
-          create: isNew,
+          // Left out when adding: the API gives the card the next free id in its slot.
+          id: card?.id,
           set,
           phase: phase as CyclePhase,
           phase_position: position as PhasePosition,
@@ -181,7 +181,7 @@ function CardForm({ card, onDone }: { card: SmartCard | null; onDone: () => void
           source: source || null,
           source_detail: sourceDetail || null,
         }),
-      isNew ? "Card added" : "Card saved",
+      isNew ? (result) => (result.id ? `Card ${result.id} added` : "Card added") : "Card saved",
       onDone,
     );
 
@@ -216,29 +216,39 @@ function CardForm({ card, onDone }: { card: SmartCard | null; onDone: () => void
               ))}
             </div>
           </Field>
-          <Field label="Card id" hint={isNew ? "Suggested from the slot. Change the number if it's taken." : undefined}>
-            <Input
-              value={id}
-              disabled={!isNew}
-              onChange={(event) => {
-                setIdTouched(true);
-                setId(event.target.value.toUpperCase());
-              }}
-              className="bg-white/60 font-mono"
-            />
+          <Field
+            label="Card id"
+            hint={isNew ? "Numbered automatically when you add the card." : "Ids don't change."}
+          >
+            <span className="flex h-8 items-center rounded-lg border border-dashed border-black/10 bg-black/[0.03] px-2.5 font-mono text-sm">
+              {isNew ? (
+                <>
+                  {slotPrefix(set, phase, position, time)}
+                  <span className="text-muted-foreground">-··</span>
+                </>
+              ) : (
+                card.id
+              )}
+            </span>
           </Field>
           <Field label="Phase">
-            <Select value={phase} onChange={(value) => choose({ phase: value as Phase })} options={PHASES} />
+            <Select
+              value={phase}
+              disabled={!isNew}
+              onChange={(value) => choose({ phase: value as Phase })}
+              options={PHASES}
+            />
           </Field>
           <Field label="Position in phase">
             <Select
               value={position}
+              disabled={!isNew}
               onChange={(value) => choose({ position: value as Position })}
               options={positions.map((value) => ({ value, label: POSITION_LABELS[value] }))}
             />
           </Field>
           <Field label="Time of day">
-            <Select value={time} onChange={(value) => choose({ time: value })} options={TIMES} />
+            <Select value={time} disabled={!isNew} onChange={(value) => choose({ time: value })} options={TIMES} />
           </Field>
           <Field label="Type">
             <Select value={contentType} onChange={setContentType} options={withCurrent(CONTENT_TYPES, contentType)} />
@@ -251,6 +261,12 @@ function CardForm({ card, onDone }: { card: SmartCard | null; onDone: () => void
             />
           </Field>
         </div>
+        {isNew ? null : (
+          <p className="-mt-1 text-xs text-muted-foreground">
+            The set, phase, position and time of day are fixed once a card exists. To use this text in another slot,
+            add a new card there and delete this one.
+          </p>
+        )}
 
         <Field label="Headline" count={headline.length} max={200}>
           <Input value={headline} onChange={(event) => setHeadline(event.target.value)} className="bg-white/60" />

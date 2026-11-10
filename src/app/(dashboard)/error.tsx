@@ -30,6 +30,10 @@ export default function DashboardError({
         <code className="mx-1 text-xs">SOLU_API_URL</code>
         points to it, then try again.
       </p>
+      {process.env.NODE_ENV !== "production" && error.message ? (
+        // Development only: production replaces the message with a generic one.
+        <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-900">{error.message}</p>
+      ) : null}
       {error.digest ? <p className="text-xs text-muted-foreground">Reference: {error.digest}</p> : null}
       <Button onClick={reset}>
         <RotateCcw /> Try again

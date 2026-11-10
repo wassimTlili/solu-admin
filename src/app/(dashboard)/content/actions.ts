@@ -17,6 +17,8 @@ import { ACCESS_COOKIE, API_URL } from "@/lib/server/session";
 export interface ActionResult {
   ok?: boolean;
   error?: string;
+  /** The id the API gave a new row. */
+  id?: string;
 }
 
 const run = async (path: string, work: () => Promise<unknown>): Promise<ActionResult> => {
@@ -42,8 +44,13 @@ const DeleteCard = graphql(`
   }
 `);
 
-export async function saveCard(input: AdminSmartCardInput) {
-  return run("/content/recommendations", () => adminRequest(SaveCard, { input }));
+/** Without `input.id` the API adds the card under the next free id for its slot. */
+export async function saveCard(input: AdminSmartCardInput): Promise<ActionResult> {
+  let id: string | undefined;
+  const result = await run("/content/recommendations", async () => {
+    id = (await adminRequest(SaveCard, { input })).adminSaveSmartCard.id;
+  });
+  return { ...result, id };
 }
 export async function deleteCard(id: string) {
   return run("/content/recommendations", () => adminRequest(DeleteCard, { id }));
@@ -53,7 +60,7 @@ export async function deleteCard(id: string) {
 
 const SaveFact = graphql(`
   mutation AdminSaveFact($input: AdminDidYouKnowInput!) {
-    adminSaveDidYouKnow(input: $input) { id }
+    adminSaveDidYouKnow(input: $input) { id external_id }
   }
 `);
 const DeleteFact = graphql(`
@@ -62,8 +69,13 @@ const DeleteFact = graphql(`
   }
 `);
 
-export async function saveFact(input: AdminDidYouKnowInput) {
-  return run("/content/did-you-know", () => adminRequest(SaveFact, { input }));
+/** A new fact gets the next DYK-{category}-NN from the API. */
+export async function saveFact(input: AdminDidYouKnowInput): Promise<ActionResult> {
+  let id: string | undefined;
+  const result = await run("/content/did-you-know", async () => {
+    id = (await adminRequest(SaveFact, { input })).adminSaveDidYouKnow.external_id ?? undefined;
+  });
+  return { ...result, id };
 }
 export async function deleteFact(id: string) {
   return run("/content/did-you-know", () => adminRequest(DeleteFact, { id }));
@@ -82,8 +94,13 @@ const DeleteDayRow = graphql(`
   }
 `);
 
-export async function saveDayRow(input: AdminCycleDayRowInput) {
-  return run("/content/cycle-days", () => adminRequest(SaveDayRow, { input }));
+/** Without `input.variation` the API adds the next variation of the window. */
+export async function saveDayRow(input: AdminCycleDayRowInput): Promise<ActionResult> {
+  let id: string | undefined;
+  const result = await run("/content/cycle-days", async () => {
+    id = (await adminRequest(SaveDayRow, { input })).adminSaveCycleDayRow.row_id;
+  });
+  return { ...result, id };
 }
 export async function deleteDayRow(rowId: string) {
   return run("/content/cycle-days", () => adminRequest(DeleteDayRow, { id: rowId }));

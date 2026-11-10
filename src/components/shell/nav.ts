@@ -2,7 +2,6 @@ import {
   BarChart3,
   BookOpenText,
   CalendarDays,
-  FileSpreadsheet,
   Lightbulb,
   MessagesSquare,
   Newspaper,
@@ -47,7 +46,6 @@ export const NAV: NavGroup[] = [
       { title: "Cycle-day lines", href: "/content/cycle-days", icon: Sun },
       { title: "Articles", href: "/content/articles", icon: Newspaper },
       { title: "Insights & prompts", href: "/content/library", icon: BookOpenText },
-      { title: "Import spreadsheets", href: "/content/import", icon: FileSpreadsheet },
     ],
   },
   {

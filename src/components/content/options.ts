@@ -80,6 +80,19 @@ export const DYK_CATEGORIES = [
   "Women Pioneers",
 ];
 
+/** The codes the content team uses in Did You Know ids (DYK-CAB-01…); the API assigns the numbers. */
+const DYK_CODES: Record<string, string> = {
+  "Cycle and Body": "CAB",
+  "Health and Nutrition": "HAN",
+  "Mental Wellness": "MWL",
+  Reproduction: "REP",
+  "Sport and Movement": "SAM",
+  "Women Pioneers": "WPI",
+};
+
+/** The id start for a category, for the form's preview (other categories: the API picks a code). */
+export const dykPrefix = (category: string) => (DYK_CODES[category] ? `DYK-${DYK_CODES[category]}` : "DYK-…");
+
 /** The blog's interest tags (same list the API checks). */
 export const INTEREST_TAGS = ["Movement", "Nutrition", "Sleep", "Hormonal Health", "Fertility", "Wellbeing"];
 

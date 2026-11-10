@@ -49,16 +49,22 @@ export type AdminCancelEventInput = {
   reason: string;
 };
 
+export type AdminClerkLoginInput = {
+  clerk_session_token: string;
+};
+
 export type AdminCycleDayRowInput = {
   body_text: string;
   energy_text: string;
   phase: CyclePhase;
   phase_position: PhasePosition;
-  variation: number;
+  /** The line to edit. Omit to add one: it gets the next variation number for its window. */
+  variation?: number | null | undefined;
 };
 
 export type AdminDidYouKnowInput = {
   category: string;
+  /** Usually omitted: a new fact gets the next DYK-{category}-NN, and a fact's id never changes */
   external_id?: string | null | undefined;
   full_text: string;
   /** Omit to add a fact */
@@ -110,13 +116,13 @@ export type AdminRefreshInput = {
 
 export type AdminSmartCardInput = {
   content_type: string;
-  /** True when adding: refuses an id already in use */
+  /** Older dashboards: true when adding with a typed id (refuses an id already in use) */
   create?: boolean | null | undefined;
   explanation: string;
   headline: string;
   hydration_tip?: string | null | undefined;
-  /** e.g. M-E-MOR-01 (Set A) or B-M-E-MOR-01 (Set B) */
-  id: string;
+  /** The card to edit. Omit when adding: the next free id for the card's slot is assigned (e.g. M-E-MOR-06). */
+  id?: string | null | undefined;
   mind?: string | null | undefined;
   phase: CyclePhase;
   phase_position: PhasePosition;
@@ -363,7 +369,7 @@ export type AdminSaveFactMutationVariables = Exact<{
 }>;
 
 
-export type AdminSaveFactMutation = { adminSaveDidYouKnow: { id: string } };
+export type AdminSaveFactMutation = { adminSaveDidYouKnow: { id: string, external_id: string | null } };
 
 export type AdminDeleteFactMutationVariables = Exact<{
   id: string;
@@ -566,6 +572,13 @@ export type AdminOverviewQueryVariables = Exact<{
 
 
 export type AdminOverviewQuery = { adminOverview: { range_days: number, from: string, to: string, kpis: { total_members: number, new_members: number, new_members_previous: number, active_today: number, active_week: number, active_month: number, stickiness: number, with_cycle: number, push_reachable: number, suspended: number }, series: Array<{ key: string, points: Array<{ date: string, value: number }> }>, cycle_types: Array<{ key: string, label: string, count: number }>, phases_today: Array<{ key: string, label: string, count: number }>, cities: Array<{ key: string, label: string, count: number }>, glow_levels: Array<{ key: string, label: string, count: number }>, interests: Array<{ key: string, label: string, count: number }>, moods: Array<{ key: string, label: string, count: number }>, goals: Array<{ key: string, label: string, count: number }>, community: { posts: number, comments: number, likes: number, groups: number, bookings: number, upcoming_hangouts: number }, top_groups: Array<{ key: string, label: string, count: number }>, content: { insight_views: number, insight_views_set_a: number, insight_views_set_b: number, discoveries_shown: number, discoveries_dismissed: number, article_impressions: number, ai_questions: number }, top_articles: Array<{ key: string, label: string, count: number }>, notifications: { sent: number, read: number, by_topic: Array<{ key: string, label: string, count: number }> } } };
+
+export type AdminLoginWithClerkMutationVariables = Exact<{
+  input: AdminClerkLoginInput;
+}>;
+
+
+export type AdminLoginWithClerkMutation = { adminLoginWithClerk: { access_token: string, refresh_token: string, expires_in: number } };
 
 export type AdminLoginMutationVariables = Exact<{
   input: AdminLoginInput;
@@ -798,6 +811,7 @@ export const AdminSaveFactDocument = new TypedDocumentString(`
     mutation AdminSaveFact($input: AdminDidYouKnowInput!) {
   adminSaveDidYouKnow(input: $input) {
     id
+    external_id
   }
 }
     `) as unknown as TypedDocumentString<AdminSaveFactMutation, AdminSaveFactMutationVariables>;
@@ -1275,6 +1289,15 @@ export const AdminOverviewDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<AdminOverviewQuery, AdminOverviewQueryVariables>;
+export const AdminLoginWithClerkDocument = new TypedDocumentString(`
+    mutation AdminLoginWithClerk($input: AdminClerkLoginInput!) {
+  adminLoginWithClerk(input: $input) {
+    access_token
+    refresh_token
+    expires_in
+  }
+}
+    `) as unknown as TypedDocumentString<AdminLoginWithClerkMutation, AdminLoginWithClerkMutationVariables>;
 export const AdminLoginDocument = new TypedDocumentString(`
     mutation AdminLogin($input: AdminLoginInput!) {
   adminLogin(input: $input) {
